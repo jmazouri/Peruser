@@ -1,67 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
 using Peruser.Annotations;
 
 namespace Peruser
 {
     public class ImageBrowser : INotifyPropertyChanged
     {
-        private List<ImageData> _allImages = new List<ImageData>();
+        private IImageLibrary curImageLibrary;
         private int _imageIndex;
 
         public string CurrentImage
         {
-            get { return _allImages[_imageIndex].Path; }
+            get { return curImageLibrary.Images[_imageIndex].Path; }
         }
 
         public string ImageIndexDisp
         {
-            get { return (ImageIndex + 1) + "/" + _allImages.Count; }
+            get { return (ImageIndex + 1) + "/" + curImageLibrary.Images.Count; }
         }
 
-        public void SetPath(string filepath)
+        public void SetLibrary(IImageLibrary library)
         {
-            _allImages.Clear();
-            foreach (string s in Directory.GetFiles(filepath))
-            {
-                _allImages.Add(new ImageData
-                {
-                    Path = s,
-                    FileName = Path.GetFileName(s),
-                    LastModified = new FileInfo(s).LastWriteTime
-                });
-            }
-
-            SortImages();
-
-            ImageIndex = 0;
-        }
-
-        public void SortImages(string sortkind = "Date Descending")
-        {
-            switch (sortkind)
-            {
-                case "Name Descending":
-                    _allImages = _allImages.OrderByDescending(d => d.FileName).ToList();
-                    break;
-                case "Name Ascending":
-                    _allImages = _allImages.OrderBy(d => d.FileName).ToList();
-                    break;
-                case "Date Descending":
-                    _allImages = _allImages.OrderByDescending(d => d.LastModified).ToList();
-                    break;
-                case "Date Ascending":
-                    _allImages = _allImages.OrderBy(d => d.LastModified).ToList();
-                    break;
-            }
-
+            curImageLibrary = library;
             ImageIndex = 0;
         }
 
@@ -74,9 +34,9 @@ namespace Peruser
 
                 if (value < 0)
                 {
-                    _imageIndex = _allImages.Count - 1;
+                    _imageIndex = curImageLibrary.Images.Count - 1;
                 }
-                if (value > _allImages.Count - 1)
+                if (value > curImageLibrary.Images.Count - 1)
                 {
                     _imageIndex = 0;
                 }
@@ -87,9 +47,15 @@ namespace Peruser
             }
         }
 
-        public ImageBrowser(string filepath)
+        public void SortImages(string sortkind)
         {
-            SetPath(filepath);
+            curImageLibrary.SortImages(sortkind);
+            ImageIndex = 0;
+        }
+
+        public ImageBrowser(IImageLibrary library)
+        {
+            SetLibrary(library);
         }
 
         public void NextImage()

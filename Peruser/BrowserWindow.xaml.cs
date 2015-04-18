@@ -1,22 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
+using System.IO;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Peruser.Annotations;
+using Peruser.ImageLibraries;
 
 namespace Peruser
 {
@@ -26,6 +18,8 @@ namespace Peruser
     public partial class BrowserWindow : Window, INotifyPropertyChanged
     {
         public ImageBrowser Browser { get; set; }
+        Configuration Configuration { get; set; }
+
         private bool IsMuted = true;
         private bool IsLooping = true;
 
@@ -35,7 +29,7 @@ namespace Peruser
             {
                 if (MediaPlayerElement.MediaDuration == 0)
                 {
-                    return "";
+                    return "00:00/00:00";
                 }
 
                 TimeSpan position = new TimeSpan(MediaPlayerElement.MediaPosition);
@@ -55,7 +49,22 @@ namespace Peruser
 
         public BrowserWindow()
         {
-            Browser = new ImageBrowser(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures));
+            if (File.Exists("config.json"))
+            {
+                Configuration = Configuration.Deserialize(File.ReadAllText("config.json"));
+            }
+            else
+            {
+                File.WriteAllText("config.json", Configuration.Serialize(new Configuration
+                {
+                    DefaultSort = "Date Descending",
+                    AllowedFileTypes = new[] { "webm", "jpg", "gif", "png", "jpeg", "bmp", "mp4", "avi", "mkv", "flv" }
+                }));
+
+                Configuration = Configuration.Deserialize(File.ReadAllText("config.json"));
+            }
+
+            Browser = new ImageBrowser(new LocalImageLibrary(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), Configuration));
             InitializeComponent();
 
             Timer t = new Timer(200);
@@ -117,7 +126,8 @@ namespace Peruser
 
             if (dialog.ShowDialog() != CommonFileDialogResult.Cancel)
             {
-                Browser.SetPath(dialog.FileName);
+                Browser.SetLibrary(new LocalImageLibrary(dialog.FileName, Configuration));
+                //Browser.SetPath(dialog.FileName);
             }
         }
 
@@ -149,6 +159,8 @@ namespace Peruser
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Browser.SortImages(SortBox.Text);
+            Configuration.DefaultSort = SortBox.Text;
+            File.WriteAllText("config.json", Configuration.Serialize(Configuration));
             Focus();
         }
     }
