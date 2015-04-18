@@ -2,10 +2,55 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
-        Title="MainWindow" Height="404" Width="620"
-        DataContext="{Binding RelativeSource={RelativeSource Self}}" KeyDown="Window_KeyDown">
-    <Grid>
-        <MediaElement Source="http://video.webmfiles.org/elephants-dream.webm" />
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:WPFMediaKit.DirectShow.Controls;assembly=WPFMediaKit"
+        mc:Ignorable="d"
+        Title="Peruser" Height="404" Width="620"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}" KeyDown="BrowserWindow_KeyDown" Icon="Icons/perusericon.png">
+    <Grid KeyDown="BrowserWindow_KeyDown">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="18" />
+            <RowDefinition Height="28" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <controls:MediaUriElement Name="MediaPlayerElement" Volume="30" Loop="True" Source="{Binding Browser.CurrentImage}" Grid.Row="0" />
+        
+        <StackPanel Grid.Row="1">
+            <Slider Value="{Binding MediaPosition, ElementName=MediaPlayerElement}"
+                    Maximum="{Binding MediaDuration, ElementName=MediaPlayerElement}"
+                    Minimum="0" TickFrequency="0" SmallChange="0" Delay="200" Interval="10" IsMoveToPointEnabled="True" />
+        </StackPanel>
+        
+        <StatusBar Grid.Row="2">
+            <StatusBarItem HorizontalAlignment="Left">
+                <StackPanel Orientation="Horizontal">
+                    <!--Text="{Binding Browser.MediaDurationInfo, FallbackValue='Media Duration'}" -->
+                    <TextBlock Name="MediaDuration" Text="{Binding MediaDurationFormatted, FallbackValue='Media Duration'}" Margin="0,0,10,0" />
+                    
+                    <TextBlock Name="FileIndex" Text="{Binding Browser.ImageIndexDisp, FallbackValue='File Index'}" Margin="0,0,10,0"/>
+                    <TextBlock Name="FilePath" Text="{Binding Browser.CurrentImage, FallbackValue='File Path'}"/>
+                </StackPanel>
+            </StatusBarItem>
+
+            <StatusBarItem HorizontalAlignment="Right">
+                <StackPanel Orientation="Horizontal">
+                    <ComboBox Name="SortBox" SelectionChanged="ComboBox_SelectionChanged" SelectedIndex="2">
+                        <ComboBoxItem>Name Descending</ComboBoxItem>
+                        <ComboBoxItem>Name Ascending</ComboBoxItem>
+                        <ComboBoxItem>Date Descending</ComboBoxItem>
+                        <ComboBoxItem>Date Ascending</ComboBoxItem>
+                    </ComboBox>
+                    <Button Name="MuteButton" Click="MuteButton_OnClick" Content="Mute" MinWidth="50"/>
+                    <Button Name="OpenFolderButton" Click="OpenFolderButton_Click">
+                        <Image Source="/Icons/iconfolder.png"></Image>
+                    </Button>
+                </StackPanel>
+            </StatusBarItem>
+            
+        </StatusBar>
+        
     </Grid>
 </Window>
