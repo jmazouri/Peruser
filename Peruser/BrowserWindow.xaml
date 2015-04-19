@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:WPFMediaKit.DirectShow.Controls;assembly=WPFMediaKit"
+        xmlns:wpf="clr-namespace:IKriv.Wpf"
         mc:Ignorable="d"
         Title="Peruser" Height="404" Width="749" 
         DataContext="{Binding RelativeSource={RelativeSource Self}}" KeyDown="BrowserWindow_KeyDown" Icon="Icons/perusericon.png" MinWidth="350" MinHeight="200">
@@ -25,30 +26,53 @@
                 <RowDefinition Height="20" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200" MinWidth="100"/>
-                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="250" MinWidth="100"/>
+                <ColumnDefinition Width="4" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <TreeView Name="LibraryTreeList" Grid.Column="0">
-                <TreeViewItem Header="Local">
-                    <TreeViewItem Header="Pictures"></TreeViewItem>
-                </TreeViewItem>
+            <TreeView Name="LibraryTreeList" Grid.Column="0" ItemsSource="{Binding Libraries}" SelectedItemChanged="LibraryTreeList_SelectedItemChanged">
+
+                <TreeView.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding Images}">
+                        <TextBlock Text="{Binding Path=Title}" />
+                        
+                        <HierarchicalDataTemplate.ItemTemplate >
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="/Icons/imageicon.png" Width="16" Height="16" VerticalAlignment="Top"/>
+                                    <TextBlock Text="{Binding FileName}" Width="{Binding ActualWidth, ElementName=LibraryTreeList, Converter={wpf:MathConverter}, ConverterParameter=x-78}" TextWrapping="Wrap" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </HierarchicalDataTemplate.ItemTemplate>
+
+                    </HierarchicalDataTemplate>
+                </TreeView.ItemTemplate>
             </TreeView>
 
-            <GridSplitter Grid.Column="1" 
-              Grid.RowSpan="2" 
-              HorizontalAlignment="Left" 
-              VerticalAlignment="Stretch"
-              Background="Black" 
-              ShowsPreview="true"
-              Width="5"/>
-
-            <controls:MediaUriElement Grid.Column="2" Grid.Row="0" Name="MediaPlayerElement" Volume="30" Loop="True" Source="{Binding Browser.CurrentImage}" />
-            
-            <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right">
-                <Button>Add Library</Button>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="2">
+                <Button Name="LoadRedditButton" Width="24" Click="LoadRedditButton_OnClick">
+                    <Image Source="/Icons/imguricon.png"></Image>
+                </Button>
+                <Button Name="OpenFolderButton" Width="24" Click="OpenFolderButton_Click">
+                    <Image Source="/Icons/iconfolder.png"></Image>
+                </Button>
             </StackPanel>
+            
+            
+            <GridSplitter Grid.Column="1" 
+                Grid.Row="0"
+                Grid.RowSpan="2" 
+                HorizontalAlignment="Left" 
+                VerticalAlignment="Stretch"
+                Background="Silver" 
+                ShowsPreview="true"
+                Focusable="False"
+                Width="4"/>
+
+            <controls:MediaUriElement Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" Name="MediaPlayerElement" Volume="30" Loop="True" Source="{Binding Browser.CurrentImage.Path}" MouseDown="MediaPlayerElement_MouseDown" />
+            
+            <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right"/>
         </Grid>
         
 
@@ -64,43 +88,32 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="76"/>
-                            <ColumnDefinition Width="35"/>
+                            <ColumnDefinition Width="70"/>
+                            <ColumnDefinition Width="45"/>
                             <ColumnDefinition Width="300*"/>
 
                             <ColumnDefinition Width="124"/>
                             <ColumnDefinition Width="57"/>
-                            <ColumnDefinition Width="28"/>
                         </Grid.ColumnDefinitions>
                     </Grid>
                 </ItemsPanelTemplate>
             </StatusBar.ItemsPanel>
 
-            <StatusBarItem Grid.Column="0">
+            <StatusBarItem Grid.Column="0" HorizontalAlignment="Stretch">
                 <TextBlock Name="MediaDuration" Text="{Binding MediaDurationFormatted, FallbackValue='Media Duration'}" />
             </StatusBarItem>
-            <StatusBarItem Grid.Column="1">
+            <StatusBarItem Grid.Column="1" HorizontalAlignment="Stretch">
                 <TextBlock Name="FileIndex" Text="{Binding Browser.ImageIndexDisp, FallbackValue='File Index'}"/>
             </StatusBarItem>
             <StatusBarItem Grid.Column="2">
-                <TextBlock Name="FilePath" Text="{Binding Browser.CurrentImage, FallbackValue='File Path'}"/>
+                <TextBlock Name="FilePath" Text="{Binding Browser.CurrentImage.FileName, FallbackValue='File Path'}"/>
             </StatusBarItem>
 
             <StatusBarItem Grid.Column="3">
-                <ComboBox Name="SortBox" SelectionChanged="ComboBox_SelectionChanged" SelectedIndex="2">
-                    <ComboBoxItem>Name Descending</ComboBoxItem>
-                    <ComboBoxItem>Name Ascending</ComboBoxItem>
-                    <ComboBoxItem>Date Descending</ComboBoxItem>
-                    <ComboBoxItem>Date Ascending</ComboBoxItem>
-                </ComboBox>
+                <ComboBox Name="SortBox" SelectionChanged="ComboBox_SelectionChanged" SelectedIndex="2" ItemsSource="{Binding Browser.ValidSorts}" />
             </StatusBarItem>
             <StatusBarItem Grid.Column="4">
                 <Button Name="MuteButton" Click="MuteButton_OnClick" Content="Mute" MinWidth="50"/>
-            </StatusBarItem>
-            <StatusBarItem Grid.Column="5">
-                <Button Name="OpenFolderButton" Click="OpenFolderButton_Click">
-                    <Image Source="/Icons/iconfolder.png"></Image>
-                </Button>
             </StatusBarItem>
         </StatusBar>
 

@@ -7,5 +7,10 @@ namespace Peruser
         public string Path { get; set; }
         public string FileName { get; set; }
         public DateTime LastModified { get; set; }
+
+        public override string ToString()
+        {
+            return Path;
+        }
     }
 }

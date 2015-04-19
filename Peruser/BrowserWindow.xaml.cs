@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -7,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using Microsoft.WindowsAPICodePack.Shell.Interop;
 using Peruser.Annotations;
 using Peruser.ImageLibraries;
 
@@ -18,10 +21,11 @@ namespace Peruser
     public partial class BrowserWindow : Window, INotifyPropertyChanged
     {
         public ImageBrowser Browser { get; set; }
+        public ObservableCollection<IImageLibrary> Libraries { get; set; }
+
         Configuration Configuration { get; set; }
 
         private bool IsMuted = true;
-        private bool IsLooping = true;
 
         public string MediaDurationFormatted
         {
@@ -32,17 +36,15 @@ namespace Peruser
                     return "00:00/00:00";
                 }
 
+                if (MediaPlayerElement.MediaPosition > MediaPlayerElement.MediaDuration)
+                {
+                    MediaPlayerElement.MediaPosition = 0;
+                }
+
                 TimeSpan position = new TimeSpan(MediaPlayerElement.MediaPosition);
                 TimeSpan duration = new TimeSpan(MediaPlayerElement.MediaDuration);
 
-                if (position > duration)
-                {
-                    return duration.ToString(@"mm\:ss") + duration.ToString(@"mm\:ss");
-                }
-                else
-                {
-                    return position.ToString(@"mm\:ss") + "/" + duration.ToString(@"mm\:ss");
-                }
+                return position.ToString(@"mm\:ss") + "/" + duration.ToString(@"mm\:ss");
                 
             }
         }
@@ -64,7 +66,13 @@ namespace Peruser
                 Configuration = Configuration.Deserialize(File.ReadAllText("config.json"));
             }
 
-            Browser = new ImageBrowser(new LocalImageLibrary(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), Configuration));
+            IImageLibrary curLibrary = new LocalImageLibrary(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), Configuration);
+            Browser = new ImageBrowser(curLibrary);
+            Libraries = new ObservableCollection<IImageLibrary>
+            {
+                curLibrary
+            };
+
             InitializeComponent();
 
             Timer t = new Timer(200);
@@ -126,8 +134,9 @@ namespace Peruser
 
             if (dialog.ShowDialog() != CommonFileDialogResult.Cancel)
             {
-                Browser.SetLibrary(new LocalImageLibrary(dialog.FileName, Configuration));
-                //Browser.SetPath(dialog.FileName);
+                IImageLibrary newLibrary = new LocalImageLibrary(dialog.FileName, Configuration);
+                Libraries.Add(newLibrary);
+                Browser.SetLibrary(newLibrary);
             }
         }
 
@@ -162,6 +171,39 @@ namespace Peruser
             Configuration.DefaultSort = SortBox.Text;
             File.WriteAllText("config.json", Configuration.Serialize(Configuration));
             Focus();
+        }
+
+        private void LibraryTreeList_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (e.NewValue is IImageLibrary)
+            {
+                Browser.SetLibrary((IImageLibrary)e.NewValue);
+            }
+        }
+
+        private void MediaPlayerElement_MouseDown(object sender, MouseEventArgs e)
+        {
+            //This is the only way to get the treeview to unfocus
+            OpenFolderButton.Focus();
+        }
+
+        private void LoadRedditButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            ChooseSubreddit dialog = new ChooseSubreddit();
+            if (dialog.ShowDialog() == true)
+            {
+                RedditImageLibrary newRedditImageLibrary = new RedditImageLibrary(dialog.Subreddit, Configuration);
+
+                if (newRedditImageLibrary.Images.Count == 0)
+                {
+                    MessageBox.Show("Error: Subreddit \""+dialog.Subreddit+"\" has no images. Omit the /r/ bit, if it's there.", "Error", MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                    return;
+                }
+
+                Libraries.Add(newRedditImageLibrary);
+                Browser.SetLibrary(newRedditImageLibrary);
+            }
         }
     }
 }

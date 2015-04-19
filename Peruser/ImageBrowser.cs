@@ -9,14 +9,19 @@ namespace Peruser
         private IImageLibrary curImageLibrary;
         private int _imageIndex;
 
-        public string CurrentImage
+        public ImageData CurrentImage
         {
-            get { return curImageLibrary.Images[_imageIndex].Path; }
+            get { return curImageLibrary.Images[_imageIndex]; }
         }
 
         public string ImageIndexDisp
         {
             get { return (ImageIndex + 1) + "/" + curImageLibrary.Images.Count; }
+        }
+
+        public string[] ValidSorts
+        {
+            get { return curImageLibrary.SortKinds; }
         }
 
         public void SetLibrary(IImageLibrary library)

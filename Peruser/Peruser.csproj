@@ -71,6 +71,9 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="HtmlAgilityPack">
+      <HintPath>..\packages\HtmlAgilityPack.1.4.9\lib\Net45\HtmlAgilityPack.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack">
       <HintPath>..\packages\Windows7APICodePack-Core.1.1.0.0\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
     </Reference>
@@ -104,9 +107,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ChooseSubreddit.xaml.cs">
+      <DependentUpon>ChooseSubreddit.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Config\Configuration.cs" />
+    <Compile Include="Converters\MathConverter.cs" />
     <Compile Include="ImageLibraries\IImageLibrary.cs" />
     <Compile Include="ImageData.cs" />
+    <Compile Include="Util.cs" />
     <Page Include="BrowserWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -119,10 +127,17 @@
       <DependentUpon>BrowserWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="ChooseSubreddit.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ImageBrowser.cs" />
     <Compile Include="ImageLibraries\LocalImageLibrary.cs" />
+    <Compile Include="ImageLibraries\RedditImageLibrary.cs" />
+    <Compile Include="ImgurApi\ImgurImage.cs" />
+    <Compile Include="ImgurApi\ImgurInfo.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -154,6 +169,9 @@
   <ItemGroup>
     <Resource Include="Icons\perusericon.png" />
     <Resource Include="Icons\iconfolder.png" />
+    <Resource Include="Icons\redditicon.png" />
+    <Resource Include="Icons\imageicon.png" />
+    <Resource Include="Icons\imguricon.png" />
     <Content Include="Libraries\WPFMediaKit.dll" />
     <Content Include="WPFMediaKit.dll" />
   </ItemGroup>

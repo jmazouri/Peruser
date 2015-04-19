@@ -11,10 +11,26 @@ namespace Peruser.ImageLibraries
     {
         public Configuration Configuration { get; set; }
 
+        public string Title
+        {
+            get { return SourcePath; }
+        }
+
         private List<ImageData> _images = new List<ImageData>();
         public List<ImageData> Images
         {
             get { return _images; }
+        }
+
+        public string[] SortKinds
+        {
+            get
+            {
+                return new[]
+                {
+                    "Name Descending", "Name Ascending", "Date Descending", "Date Ascending"
+                };
+            }
         }
 
         public string SourcePath { get; set; }
@@ -53,6 +69,8 @@ namespace Peruser.ImageLibraries
                     });
                 }
             }
+
+            SourcePath = filepath;
 
             SortImages();
             OnPropertyChanged("Images");
