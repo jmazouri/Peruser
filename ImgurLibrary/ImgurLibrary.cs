@@ -8,11 +8,17 @@ using Path = System.IO.Path;
 
 namespace Peruser.ImageLibraries
 {
-    public class RedditImageLibrary : IImageLibrary
+    public class ImgurLibrary : IImageLibrary
     {
         private string curSubreddit = "";
 
-        private List<ImageData> loadedImages = new List<ImageData>(); 
+        private List<ImageData> loadedImages = new List<ImageData>();
+
+        public string IconPath
+        {
+            get { return "Icons/imguricon.png"; }
+        }
+
         public List<ImageData> Images
         {
             get { return loadedImages; }
@@ -20,7 +26,7 @@ namespace Peruser.ImageLibraries
 
         public string[] SortKinds
         {
-            get { return new[] {"Hot", "Top", "Newest"}; }
+            get { return new[] { "Top - Day", "Top - Week", "Top - Month", "Top - Year", "Top - All", "Newest" }; }
         }
 
         public string SourcePath { get; set; }
@@ -35,7 +41,7 @@ namespace Peruser.ImageLibraries
             
         }
 
-        public RedditImageLibrary(string subreddit, Configuration config)
+        public ImgurLibrary(string subreddit, Configuration config)
         {
             loadedImages = ImgurInfo.GetImagesFromSubreddit(subreddit)
                 .Select(d => new ImageData

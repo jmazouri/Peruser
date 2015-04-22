@@ -5,6 +5,7 @@ namespace Peruser
 {
     public interface IImageLibrary : INotifyPropertyChanged
     {
+        string IconPath { get; }
         List<ImageData> Images { get; }
         string[] SortKinds { get; }
         string SourcePath { get; set; }

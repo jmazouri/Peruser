@@ -8,10 +8,7 @@ using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Microsoft.WindowsAPICodePack.Dialogs;
-using Microsoft.WindowsAPICodePack.Shell.Interop;
 using Peruser.Annotations;
-using Peruser.ImageLibraries;
 
 namespace Peruser
 {
@@ -22,7 +19,7 @@ namespace Peruser
     {
         public ImageBrowser Browser { get; set; }
         public ObservableCollection<IImageLibrary> Libraries { get; set; }
-
+            
         Configuration Configuration { get; set; }
 
         private bool IsMuted = true;
@@ -66,12 +63,7 @@ namespace Peruser
                 Configuration = Configuration.Deserialize(File.ReadAllText("config.json"));
             }
 
-            IImageLibrary curLibrary = new LocalImageLibrary(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), Configuration);
-            Browser = new ImageBrowser(curLibrary);
-            Libraries = new ObservableCollection<IImageLibrary>
-            {
-                curLibrary
-            };
+            Browser = new ImageBrowser();
 
             InitializeComponent();
 
@@ -128,18 +120,6 @@ namespace Peruser
             e.Handled = true;
         }
 
-        private void OpenFolderButton_Click(object sender, RoutedEventArgs e)
-        {
-            CommonOpenFileDialog dialog = new CommonOpenFileDialog {IsFolderPicker = true};
-
-            if (dialog.ShowDialog() != CommonFileDialogResult.Cancel)
-            {
-                IImageLibrary newLibrary = new LocalImageLibrary(dialog.FileName, Configuration);
-                Libraries.Add(newLibrary);
-                Browser.SetLibrary(newLibrary);
-            }
-        }
-
         private void MuteButton_OnClick(object sender, RoutedEventArgs e)
         {
             if (IsMuted)
@@ -175,35 +155,54 @@ namespace Peruser
 
         private void LibraryTreeList_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            if (e.NewValue is IImageLibrary)
+            var value = e.NewValue as IImageLibrary;
+            if (value != null)
             {
-                Browser.SetLibrary((IImageLibrary)e.NewValue);
+                Browser.SetLibrary(value);
             }
         }
 
         private void MediaPlayerElement_MouseDown(object sender, MouseEventArgs e)
         {
             //This is the only way to get the treeview to unfocus
-            OpenFolderButton.Focus();
+            MuteButton.Focus();
         }
 
+        /*
         private void LoadRedditButton_OnClick(object sender, RoutedEventArgs e)
         {
             ChooseSubreddit dialog = new ChooseSubreddit();
             if (dialog.ShowDialog() == true)
             {
-                RedditImageLibrary newRedditImageLibrary = new RedditImageLibrary(dialog.Subreddit, Configuration);
+                ImgurLibrary newImgurLibrary = new ImgurLibrary(dialog.Subreddit, Configuration);
 
-                if (newRedditImageLibrary.Images.Count == 0)
+                if (newImgurLibrary.Images.Count == 0)
                 {
                     MessageBox.Show("Error: Subreddit \""+dialog.Subreddit+"\" has no images. Omit the /r/ bit, if it's there.", "Error", MessageBoxButton.OK,
                         MessageBoxImage.Error);
                     return;
                 }
 
-                Libraries.Add(newRedditImageLibrary);
-                Browser.SetLibrary(newRedditImageLibrary);
+                Libraries.Add(newImgurLibrary);
+                Browser.SetLibrary(newImgurLibrary);
             }
+        }
+        */
+
+        private void AddLibrary_OnClick(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            if (button == null) return;
+
+            var imageLibrary = button.DataContext as IImageLibrary;
+            if (imageLibrary != null)
+            {
+                
+            }
+            /*
+             * Libraries.Add(newLibrary);
+             * Browser.SetLibrary(newLibrary);
+            */
         }
     }
 }

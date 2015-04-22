@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Peruser.Annotations;
 
@@ -11,17 +12,44 @@ namespace Peruser
 
         public ImageData CurrentImage
         {
-            get { return curImageLibrary.Images[_imageIndex]; }
+            get
+            {
+                if (curImageLibrary == null)
+                {
+                    return new ImageData
+                    {
+                        FileName = "Nothing",
+                        Path = "",
+                        LastModified = DateTime.Now
+                    };
+                }
+
+                return curImageLibrary.Images[_imageIndex];
+            }
         }
 
         public string ImageIndexDisp
         {
-            get { return (ImageIndex + 1) + "/" + curImageLibrary.Images.Count; }
+            get
+            {
+                if (curImageLibrary == null)
+                {
+                    return "No Images";
+                }
+                return (ImageIndex + 1) + "/" + curImageLibrary.Images.Count;
+            }
         }
 
         public string[] ValidSorts
         {
-            get { return curImageLibrary.SortKinds; }
+            get
+            {
+                if (curImageLibrary == null)
+                {
+                    return new[] {"None"};
+                }
+                return curImageLibrary.SortKinds;
+            }
         }
 
         public void SetLibrary(IImageLibrary library)
@@ -54,13 +82,11 @@ namespace Peruser
 
         public void SortImages(string sortkind)
         {
-            curImageLibrary.SortImages(sortkind);
-            ImageIndex = 0;
-        }
-
-        public ImageBrowser(IImageLibrary library)
-        {
-            SetLibrary(library);
+            if (curImageLibrary != null)
+            {
+                curImageLibrary.SortImages(sortkind);
+                ImageIndex = 0;
+            }
         }
 
         public void NextImage()

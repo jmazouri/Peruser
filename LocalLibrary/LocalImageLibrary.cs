@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using Peruser.Annotations;
 
 namespace Peruser.ImageLibraries
@@ -17,6 +18,12 @@ namespace Peruser.ImageLibraries
         }
 
         private List<ImageData> _images = new List<ImageData>();
+
+        public string IconPath
+        {
+            get { return "Icons/iconfolder.png"; }
+        }
+
         public List<ImageData> Images
         {
             get { return _images; }
@@ -54,6 +61,18 @@ namespace Peruser.ImageLibraries
             }
         }
 
+        public IImageLibrary CreateLibrary()
+        {
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog { IsFolderPicker = true };
+
+            if (dialog.ShowDialog() != CommonFileDialogResult.Cancel)
+            {
+                return new LocalImageLibrary(dialog.FileName, Configuration);
+            }
+
+            return null;
+        }
+
         public void SetPath(string filepath)
         {
             _images.Clear();
@@ -78,6 +97,7 @@ namespace Peruser.ImageLibraries
 
         public LocalImageLibrary(string directoryPath, Configuration config)
         {
+            //Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), Configuration
             Configuration = config;
             SetPath(directoryPath);
         }

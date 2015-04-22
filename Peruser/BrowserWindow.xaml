@@ -50,13 +50,24 @@
                 </TreeView.ItemTemplate>
             </TreeView>
 
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="2">
+            <StackPanel Orientation="Horizontal" Grid.Column="0" HorizontalAlignment="Right" Grid.Row="1">
+                <ItemsControl ItemsSource="{Binding Libraries}"> 
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Click="AddLibrary_OnClick">
+                                <Image Source="{Binding IconPath}" Width="16"/>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <!--
                 <Button Name="LoadRedditButton" Width="24" Click="LoadRedditButton_OnClick">
                     <Image Source="/Icons/imguricon.png"></Image>
                 </Button>
                 <Button Name="OpenFolderButton" Width="24" Click="OpenFolderButton_Click">
                     <Image Source="/Icons/iconfolder.png"></Image>
                 </Button>
+                -->
             </StackPanel>
             
             
@@ -71,8 +82,7 @@
                 Width="4"/>
 
             <controls:MediaUriElement Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" Name="MediaPlayerElement" Volume="30" Loop="True" Source="{Binding Browser.CurrentImage.Path}" MouseDown="MediaPlayerElement_MouseDown" />
-            
-            <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right"/>
+
         </Grid>
         
 
@@ -89,7 +99,7 @@
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="70"/>
-                            <ColumnDefinition Width="45"/>
+                            <ColumnDefinition Width="55"/>
                             <ColumnDefinition Width="300*"/>
 
                             <ColumnDefinition Width="124"/>
