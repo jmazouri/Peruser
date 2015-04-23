@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -13,7 +14,7 @@ namespace Peruser
             get { return ""; }
         }
 
-        public abstract List<ImageData> Images { get; }
+        public abstract ObservableCollection<ImageData> Images { get; set; }
         public abstract string[] SortKinds { get; }
 
         public static ImageLibrary CreateLibrary(Configuration configuration)

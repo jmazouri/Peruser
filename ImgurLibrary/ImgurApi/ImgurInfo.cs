@@ -1,24 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Peruser.ImgurApi;
 
-namespace Peruser.ImgurApi
+namespace ImgurLibrary.ImgurApi
 {
     public class ImgurInfo
     {
-        public static List<ImgurImage> GetImagesFromSubreddit(string subreddit)
+        public static List<ImgurImage> GetImagesFromSubreddit(string subreddit, string sort = "top", string window = "week")
         {
             WebClient w = new WebClient();
             w.Headers.Add("Authorization", "Client-ID 5cc135541ec45ae");
 
             try
             {
-                string jsondata = w.DownloadString(String.Format("https://api.imgur.com/3/gallery/r/{0}/", subreddit));
+                string url = String.Format("https://api.imgur.com/3/gallery/r/{0}/{1}/{2}", subreddit, sort, window);
+                string jsondata = w.DownloadString(url);
                 dynamic returnedObject = JObject.Parse(jsondata);
 
                 return JsonConvert.DeserializeObject<List<ImgurImage>>(returnedObject.data.ToString());

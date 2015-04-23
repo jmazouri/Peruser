@@ -4,11 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:WPFMediaKit.DirectShow.Controls;assembly=WPFMediaKit"
-        xmlns:wpf="clr-namespace:IKriv.Wpf"
+        xmlns:converters="clr-namespace:Peruser.Converters"
         mc:Ignorable="d"
         Title="Peruser" Height="404" Width="749" 
-        DataContext="{Binding RelativeSource={RelativeSource Self}}" KeyDown="BrowserWindow_KeyDown" Icon="Icons/perusericon.png" MinWidth="350" MinHeight="200">
-    <Grid KeyDown="BrowserWindow_KeyDown">
+        DataContext="{Binding RelativeSource={RelativeSource Self}}" 
+        KeyDown="BrowserWindow_KeyDown" MouseWheel="MediaPlayerElement_MouseWheel"
+        Icon="Icons/perusericon.png" MinWidth="350" MinHeight="200">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="18" />
@@ -17,8 +19,8 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        
-        
+
+
 
         <Grid>
             <Grid.RowDefinitions>
@@ -31,17 +33,17 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <TreeView Name="LibraryTreeList" Grid.Column="0" ItemsSource="{Binding Libraries}" SelectedItemChanged="LibraryTreeList_SelectedItemChanged">
+            <TreeView Name="LibraryTreeList" Grid.Column="0" ItemsSource="{Binding Libraries}" SelectedItemChanged="LibraryTreeList_SelectedItemChanged" Panel.ZIndex="3">
 
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding Images}">
                         <TextBlock Text="{Binding Path=Title}" />
-                        
+
                         <HierarchicalDataTemplate.ItemTemplate >
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="/Icons/imageicon.png" Width="16" Height="16" VerticalAlignment="Top"/>
-                                    <TextBlock Text="{Binding FileName}" Width="{Binding ActualWidth, ElementName=LibraryTreeList, Converter={wpf:MathConverter}, ConverterParameter=x-78}" TextWrapping="Wrap" />
+                                    <TextBlock Text="{Binding FileName}" Width="{Binding ActualWidth, ElementName=LibraryTreeList, Converter={converters:MathConverter}, ConverterParameter=x-78}" TextWrapping="Wrap" />
                                 </StackPanel>
                             </DataTemplate>
                         </HierarchicalDataTemplate.ItemTemplate>
@@ -50,19 +52,8 @@
                 </TreeView.ItemTemplate>
             </TreeView>
 
-            <StackPanel Name="AddLibraryPanel" Orientation="Horizontal" Grid.Column="0" HorizontalAlignment="Right" Grid.Row="1">
-                
-                <!--
-                <Button Name="LoadRedditButton" Width="24" Click="LoadRedditButton_OnClick">
-                    <Image Source="/Icons/imguricon.png"></Image>
-                </Button>
-                <Button Name="OpenFolderButton" Width="24" Click="OpenFolderButton_Click">
-                    <Image Source="/Icons/iconfolder.png"></Image>
-                </Button>
-                -->
-            </StackPanel>
-            
-            
+            <StackPanel Name="AddLibraryPanel" Orientation="Horizontal" Grid.Column="0" HorizontalAlignment="Right" Grid.Row="1" />
+
             <GridSplitter Grid.Column="1" 
                 Grid.Row="0"
                 Grid.RowSpan="2" 
@@ -73,10 +64,10 @@
                 Focusable="False"
                 Width="4"/>
 
-            <controls:MediaUriElement Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" Name="MediaPlayerElement" Volume="30" Loop="True" Source="{Binding Browser.CurrentImage.Path}" MouseDown="MediaPlayerElement_MouseDown" />
+            <controls:MediaUriElement Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" Name="MediaPlayerElement" Volume="30" Loop="True" Source="{Binding Browser.CurrentImage.Path}" MouseDown="MediaPlayerElement_MouseDown" Panel.ZIndex="-5"/>
 
         </Grid>
-        
+
 
         <Slider Grid.Row="1" Value="{Binding MediaPosition, ElementName=MediaPlayerElement}"
                     Maximum="{Binding MediaDuration, ElementName=MediaPlayerElement}"
@@ -107,12 +98,12 @@
                 <TextBlock Name="FileIndex" Text="{Binding Browser.ImageIndexDisp, FallbackValue='File Index'}"/>
             </StatusBarItem>
             <StatusBarItem Grid.Column="2">
-                <TextBlock Name="FilePath" Text="{Binding Browser.CurrentImage.FileName, FallbackValue='File Path'}"/>
+                <TextBlock Name="FilePath" Text="{Binding Browser.CurrentImage.FileName, FallbackValue='File Path'}" MouseDown="FilePath_MouseDown" Cursor="Hand"/>
             </StatusBarItem>
 
             <StatusBarItem Grid.Column="3" HorizontalAlignment="Right">
                 <StackPanel Orientation="Horizontal">
-                    <ComboBox Name="SortBox" SelectionChanged="ComboBox_SelectionChanged" SelectedIndex="2" ItemsSource="{Binding Browser.ValidSorts}" />
+                    <ComboBox Name="SortBox" SelectionChanged="ComboBox_SelectionChanged" ItemsSource="{Binding Browser.ValidSorts}" />
                     <Button Name="MuteButton" Click="MuteButton_OnClick" Content="Mute" MinWidth="50"/>
                 </StackPanel>
             </StatusBarItem>

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
 using Peruser.Annotations;
 
 namespace Peruser
@@ -14,7 +16,7 @@ namespace Peruser
         {
             get
             {
-                if (curImageLibrary == null)
+                if (curImageLibrary == null || curImageLibrary.Images.Count == 0)
                 {
                     return new ImageData
                     {
@@ -88,6 +90,15 @@ namespace Peruser
             if (foundIndex >= 0)
             {
                 ImageIndex = foundIndex;
+            }
+        }
+
+        public void SetIndexToPath(string path)
+        {
+            ImageData foundImage = curImageLibrary.Images.FirstOrDefault(d => d.Path == path);
+            if (foundImage != null)
+            {
+                SetIndexToImage(foundImage);
             }
         }
 

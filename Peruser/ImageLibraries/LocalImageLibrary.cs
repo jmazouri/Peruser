@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -18,17 +19,13 @@ namespace Peruser.ImageLibraries
             get { return _sourcePath; }
         }
 
-        private List<ImageData> _images = new List<ImageData>();
-
         new public static string IconPath
         {
             get { return "Icons/iconfolder.png"; }
         }
 
-        public override List<ImageData> Images
-        {
-            get { return _images; }
-        }
+        private List<ImageData> _images = new List<ImageData>(); 
+        public override ObservableCollection<ImageData> Images { get; set; }
 
         public override string[] SortKinds
         {
@@ -58,6 +55,8 @@ namespace Peruser.ImageLibraries
                     _images = _images.OrderBy(d => d.LastModified).ToList();
                     break;
             }
+            Images.Clear();
+            foreach (ImageData img in _images) { Images.Add(img); }
         }
 
         new public static ImageLibrary CreateLibrary(Configuration configuration)
@@ -94,9 +93,10 @@ namespace Peruser.ImageLibraries
             OnPropertyChanged("Images");
         }
 
-        private LocalImageLibrary(string directoryPath, Configuration config)
+        public LocalImageLibrary(string directoryPath, Configuration config)
         {
             //Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), Configuration
+            Images = new ObservableCollection<ImageData>();
             Configuration = config;
             SetPath(directoryPath);
         }

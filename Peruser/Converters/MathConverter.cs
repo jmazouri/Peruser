@@ -3,6 +3,7 @@
  * ivan [at] ikriv.com
  * They are distributed under the Apache License http://www.apache.org/licenses/LICENSE-2.0.html
  */
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -11,7 +12,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup;
 
-namespace IKriv.Wpf
+namespace Peruser.Converters
 {
     /// <summary>
     /// Value converter that performs arithmetic calculations over its argument(s)
@@ -24,13 +25,9 @@ namespace IKriv.Wpf
     /// Arguments of multi value converter may be referred as x,y,z,t (first-fourth argument), or a,b,c,d, or {0}, {1}, {2}, {3}, {4}, ...
     /// The converter supports arithmetic expressions of arbitrary complexity, including nested subexpressions
     /// </remarks>
-    public class MathConverter :
-#if !SILVERLIGHT
- MarkupExtension,
-        IMultiValueConverter,
-#endif
- IValueConverter
+    public class MathConverter : MarkupExtension, IMultiValueConverter, IValueConverter
     {
+        public MathConverter() { }
         Dictionary<string, IExpression> _storedExpressions = new Dictionary<string, IExpression>();
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -68,12 +65,12 @@ namespace IKriv.Wpf
             throw new NotImplementedException();
         }
 
-#if !SILVERLIGHT
+
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
             return this;
         }
-#endif
+
         protected virtual void ProcessException(Exception ex)
         {
             Console.WriteLine(ex.Message);

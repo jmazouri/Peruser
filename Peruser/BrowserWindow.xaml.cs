@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Timers;
 using System.Windows;
@@ -12,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Peruser.Annotations;
+using Peruser.ImageLibraries;
 
 namespace Peruser
 {
@@ -22,6 +25,7 @@ namespace Peruser
     {
         public ImageBrowser Browser { get; set; }
         public ObservableCollection<ImageLibrary> Libraries { get; set; }
+        private float _imageScale = 1;
             
         Configuration Configuration { get; set; }
 
@@ -49,22 +53,23 @@ namespace Peruser
             }
         }
 
-        public BrowserWindow()
+        void LoadSaveConfiguration()
         {
-            if (File.Exists("config.json"))
+            string pathToConfig = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "config.json");
+            if (!File.Exists(pathToConfig))
             {
-                Configuration = Configuration.Deserialize(File.ReadAllText("config.json"));
-            }
-            else
-            {
-                File.WriteAllText("config.json", Configuration.Serialize(new Configuration
+                File.WriteAllText(pathToConfig, Configuration.Serialize(new Configuration
                 {
-                    DefaultSort = "Date Descending",
                     AllowedFileTypes = new[] { "webm", "jpg", "gif", "png", "jpeg", "bmp", "mp4", "avi", "mkv", "flv" }
                 }));
-
-                Configuration = Configuration.Deserialize(File.ReadAllText("config.json"));
             }
+
+            Configuration = Configuration.Deserialize(File.ReadAllText(pathToConfig));
+        }
+
+        public BrowserWindow()
+        {
+            LoadSaveConfiguration();
 
             Browser = new ImageBrowser();
             Libraries = new ObservableCollection<ImageLibrary>();
@@ -88,6 +93,27 @@ namespace Peruser
                 b.Width = 24;
 
                 AddLibraryPanel.Children.Add(b);
+            }
+
+            string cmdLine = Environment.GetCommandLineArgs().Skip(1).FirstOrDefault();
+
+            if (cmdLine != null)
+            {
+                string dirPath = cmdLine.TrimEnd('\\');
+
+                if (Directory.Exists(dirPath))
+                {
+                    Libraries.Add(new LocalImageLibrary(dirPath, Configuration));
+                }
+                else
+                {
+                    if (File.Exists(cmdLine))
+                    {
+                        Libraries.Add(new LocalImageLibrary(Path.GetDirectoryName(cmdLine), Configuration));
+                        Browser.SetLibrary(Libraries.First());
+                        Browser.SetIndexToPath(cmdLine);
+                    }
+                }
             }
 
             Timer t = new Timer(200);
@@ -170,10 +196,9 @@ namespace Peruser
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Browser.SortImages(SortBox.Text);
-            Configuration.DefaultSort = SortBox.Text;
-            File.WriteAllText("config.json", Configuration.Serialize(Configuration));
+            Browser.SortImages(e.AddedItems[0].ToString());
             Focus();
+            OnPropertyChanged("Libraries");
         }
 
         private void LibraryTreeList_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
@@ -196,30 +221,15 @@ namespace Peruser
 
         private void MediaPlayerElement_MouseDown(object sender, MouseEventArgs e)
         {
+            if (e.MiddleButton == MouseButtonState.Pressed)
+            {
+                ScaleTransform scaleTransform1 = new ScaleTransform(1, 1, MediaPlayerElement.ActualWidth / 2, MediaPlayerElement.ActualHeight / 2);
+                MediaPlayerElement.RenderTransform = scaleTransform1;
+                _imageScale = 1;
+            }
             //This is the only way to get the treeview to unfocus
             MuteButton.Focus();
         }
-
-        /*
-        private void LoadRedditButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            ChooseSubreddit dialog = new ChooseSubreddit();
-            if (dialog.ShowDialog() == true)
-            {
-                ImgurLibrary newImgurLibrary = new ImgurLibrary(dialog.Subreddit, Configuration);
-
-                if (newImgurLibrary.Images.Count == 0)
-                {
-                    MessageBox.Show("Error: Subreddit \""+dialog.Subreddit+"\" has no images. Omit the /r/ bit, if it's there.", "Error", MessageBoxButton.OK,
-                        MessageBoxImage.Error);
-                    return;
-                }
-
-                Libraries.Add(newImgurLibrary);
-                Browser.SetLibrary(newImgurLibrary);
-            }
-        }
-        */
 
         private void AddLibrary_OnClick(object sender, RoutedEventArgs e)
         {
@@ -227,18 +237,32 @@ namespace Peruser
             if (button == null) return;
 
             var imageLibrary = button.DataContext as Type;
-            if (imageLibrary != null)
-            {
-                ImageLibrary newLibrary =
-                    imageLibrary.GetMethod("CreateLibrary").Invoke(null, new[] {Configuration}) as ImageLibrary;
+            if (imageLibrary == null) return;
 
-                Libraries.Add(newLibrary);
-                Browser.SetLibrary(newLibrary);
+            var newLibrary = imageLibrary.GetMethod("CreateLibrary").Invoke(null, new object[] {Configuration}) as ImageLibrary;
+            if (newLibrary == null) return;
+
+            Libraries.Add(newLibrary);
+            Browser.SetLibrary(newLibrary);
+        }
+
+        private void MediaPlayerElement_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            _imageScale += (e.Delta > 0 ? 0.06f : -0.06f);
+
+            double xCenter = Mouse.GetPosition(MediaPlayerElement).X;
+            double yCenter = Mouse.GetPosition(MediaPlayerElement).Y;
+
+            ScaleTransform scaleTransform1 = new ScaleTransform(_imageScale, _imageScale, xCenter, yCenter);
+            MediaPlayerElement.RenderTransform = scaleTransform1;
+        }
+
+        private void FilePath_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (Uri.IsWellFormedUriString(Browser.CurrentImage.Path, UriKind.Absolute) || File.Exists(Browser.CurrentImage.Path))
+            {
+                Process.Start(Browser.CurrentImage.Path);
             }
-            /*
-             * Libraries.Add(newLibrary);
-             * Browser.SetLibrary(newLibrary);
-            */
         }
     }
 }

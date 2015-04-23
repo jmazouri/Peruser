@@ -9,6 +9,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Peruser.ImageLibraries;
+
 namespace Peruser
 {
     public static class LibraryContainer
@@ -22,7 +24,7 @@ namespace Peruser
                 if (_iocContainer == null)
                 {
                     _iocContainer = new List<Type>();
-                    FileInfo[] allDlls = new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), "ImageLibraries")).GetFiles("*.dll");
+                    FileInfo[] allDlls = new DirectoryInfo(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "ImageLibraries")).GetFiles("*.dll");
 
                     /*
                     AppDomain.CurrentDomain.AssemblyResolve += (sender, args) => Assembly.LoadFile(new Uri(args.RequestingAssembly.CodeBase).AbsolutePath);
@@ -32,6 +34,8 @@ namespace Peruser
                         var assembly = Assembly.LoadFrom(s.FullName);
                         _iocContainer.AddRange(assembly.GetTypes().Where(d => typeof (ImageLibrary).IsAssignableFrom(d)));
                     }
+
+                    _iocContainer.Add(typeof (LocalImageLibrary));
                 }
 
                 return _iocContainer;
