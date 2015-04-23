@@ -9,14 +9,14 @@ namespace Peruser
 {
     public class ImageBrowser : INotifyPropertyChanged
     {
-        private ImageLibrary curImageLibrary;
+        public ImageLibrary CurrentLibrary { get; set; }
         private int _imageIndex;
 
         public ImageData CurrentImage
         {
             get
             {
-                if (curImageLibrary == null || curImageLibrary.Images.Count == 0)
+                if (CurrentLibrary == null || CurrentLibrary.Images.Count == 0)
                 {
                     return new ImageData
                     {
@@ -26,7 +26,7 @@ namespace Peruser
                     };
                 }
 
-                return curImageLibrary.Images[_imageIndex];
+                return CurrentLibrary.Images[_imageIndex];
             }
         }
 
@@ -34,11 +34,11 @@ namespace Peruser
         {
             get
             {
-                if (curImageLibrary == null)
+                if (CurrentLibrary == null)
                 {
                     return "No Images";
                 }
-                return (ImageIndex + 1) + "/" + curImageLibrary.Images.Count;
+                return (ImageIndex + 1) + "/" + CurrentLibrary.Images.Count;
             }
         }
 
@@ -46,17 +46,17 @@ namespace Peruser
         {
             get
             {
-                if (curImageLibrary == null)
+                if (CurrentLibrary == null)
                 {
                     return new[] {"None"};
                 }
-                return curImageLibrary.SortKinds;
+                return CurrentLibrary.SortKinds;
             }
         }
 
         public void SetLibrary(ImageLibrary library)
         {
-            curImageLibrary = library;
+            CurrentLibrary = library;
             ImageIndex = 0;
             OnPropertyChanged("ValidSorts");
         }
@@ -70,9 +70,9 @@ namespace Peruser
 
                 if (value < 0)
                 {
-                    _imageIndex = curImageLibrary.Images.Count - 1;
+                    _imageIndex = CurrentLibrary.Images.Count - 1;
                 }
-                if (value > curImageLibrary.Images.Count - 1)
+                if (value > CurrentLibrary.Images.Count - 1)
                 {
                     _imageIndex = 0;
                 }
@@ -85,7 +85,7 @@ namespace Peruser
 
         public void SetIndexToImage(ImageData image)
         {
-            int foundIndex = curImageLibrary.Images.IndexOf(image);
+            int foundIndex = CurrentLibrary.Images.IndexOf(image);
 
             if (foundIndex >= 0)
             {
@@ -95,7 +95,7 @@ namespace Peruser
 
         public void SetIndexToPath(string path)
         {
-            ImageData foundImage = curImageLibrary.Images.FirstOrDefault(d => d.Path == path);
+            ImageData foundImage = CurrentLibrary.Images.FirstOrDefault(d => d.Path == path);
             if (foundImage != null)
             {
                 SetIndexToImage(foundImage);
@@ -104,9 +104,9 @@ namespace Peruser
 
         public void SortImages(string sortkind)
         {
-            if (curImageLibrary != null)
+            if (CurrentLibrary != null)
             {
-                curImageLibrary.SortImages(sortkind);
+                CurrentLibrary.SortImages(sortkind);
                 ImageIndex = 0;
             }
         }

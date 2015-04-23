@@ -23,9 +23,37 @@ namespace Peruser
     /// </summary>
     public partial class BrowserWindow : Window, INotifyPropertyChanged
     {
+        public string ToastMessage { get; set; }
         public ImageBrowser Browser { get; set; }
         public ObservableCollection<ImageLibrary> Libraries { get; set; }
         private float _imageScale = 1;
+
+        private int LibraryIndex
+        {
+            get
+            {
+                //Browser.SetLibrary(Libraries[Libraries.IndexOf(Browser.CurrentLibrary) + 1]);
+                return Libraries.IndexOf(Browser.CurrentLibrary);
+            }
+            set
+            {
+                if (Libraries.Count == 0) { return; }
+                int libraryIndex = value;
+
+                if (value < 0)
+                {
+                    libraryIndex = Libraries.Count - 1;
+                }
+                if (value > Libraries.Count - 1)
+                {
+                    libraryIndex = 0;
+                }
+
+                Browser.SetLibrary(Libraries[libraryIndex]);
+                ToastMessage = Libraries[libraryIndex].Title;
+                OnPropertyChanged("ToastMessage");
+            }
+        }
             
         Configuration Configuration { get; set; }
 
@@ -126,6 +154,21 @@ namespace Peruser
 
         private void BrowserWindow_KeyDown(object sender, KeyEventArgs e)
         {
+            if (e.Key == Key.Tab)
+            {
+                if ((Keyboard.Modifiers & ModifierKeys.Control & ModifierKeys.Shift) == (ModifierKeys.Control & ModifierKeys.Shift))
+                {
+                    LibraryIndex--;
+                }
+                else
+                {
+                    if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+                    {
+                        LibraryIndex++;
+                    }
+                }
+            }
+
             if (e.Key == Key.Right)
             {
                 if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
@@ -227,6 +270,7 @@ namespace Peruser
                 MediaPlayerElement.RenderTransform = scaleTransform1;
                 _imageScale = 1;
             }
+
             //This is the only way to get the treeview to unfocus
             MuteButton.Focus();
         }
