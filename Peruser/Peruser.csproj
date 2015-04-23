@@ -75,10 +75,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Ninject">
-      <HintPath>..\packages\Ninject.3.2.2.0\lib\net45-full\Ninject.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.ComponentModel.Composition.Registration" />
+    <Reference Include="System.Reflection.Context" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml">
@@ -97,13 +97,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ChooseSubreddit.xaml.cs">
-      <DependentUpon>ChooseSubreddit.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Config\Configuration.cs" />
     <Compile Include="Converters\MathConverter.cs" />
-    <Compile Include="IImageLibrary.cs" />
+    <Compile Include="ImageLibrary.cs" />
     <Compile Include="ImageData.cs" />
+    <Compile Include="LibraryContainer.cs" />
     <Compile Include="Util.cs" />
     <Page Include="BrowserWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -117,10 +115,6 @@
       <DependentUpon>BrowserWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="ChooseSubreddit.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ImageBrowser.cs" />
@@ -153,11 +147,21 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Icons\perusericon.png" />
-    <Resource Include="Icons\iconfolder.png" />
-    <Resource Include="Icons\redditicon.png" />
-    <Resource Include="Icons\imageicon.png" />
-    <Resource Include="Icons\imguricon.png" />
+    <Content Include="Icons\perusericon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Icons\iconfolder.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Icons\redditicon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Icons\imageicon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Icons\imguricon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Lib\WPFMediaKit.dll" />
     <Content Include="WPFMediaKit.dll" />
   </ItemGroup>
@@ -178,9 +182,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ImageLibraries\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -8,28 +8,29 @@ using Peruser.Annotations;
 
 namespace Peruser.ImageLibraries
 {
-    public class LocalImageLibrary : IImageLibrary
+    public class LocalImageLibrary : ImageLibrary
     {
         public Configuration Configuration { get; set; }
 
-        public string Title
+        private string _sourcePath = "";
+        public override string Title
         {
-            get { return SourcePath; }
+            get { return _sourcePath; }
         }
 
         private List<ImageData> _images = new List<ImageData>();
 
-        public string IconPath
+        new public static string IconPath
         {
             get { return "Icons/iconfolder.png"; }
         }
 
-        public List<ImageData> Images
+        public override List<ImageData> Images
         {
             get { return _images; }
         }
 
-        public string[] SortKinds
+        public override string[] SortKinds
         {
             get
             {
@@ -40,9 +41,7 @@ namespace Peruser.ImageLibraries
             }
         }
 
-        public string SourcePath { get; set; }
-
-        public void SortImages(string sortkind = "Date Descending")
+        public override void SortImages(string sortkind = "Date Descending")
         {
             switch (sortkind)
             {
@@ -61,13 +60,13 @@ namespace Peruser.ImageLibraries
             }
         }
 
-        public IImageLibrary CreateLibrary()
+        new public static ImageLibrary CreateLibrary(Configuration configuration)
         {
             CommonOpenFileDialog dialog = new CommonOpenFileDialog { IsFolderPicker = true };
 
             if (dialog.ShowDialog() != CommonFileDialogResult.Cancel)
             {
-                return new LocalImageLibrary(dialog.FileName, Configuration);
+                return new LocalImageLibrary(dialog.FileName, configuration);
             }
 
             return null;
@@ -89,26 +88,17 @@ namespace Peruser.ImageLibraries
                 }
             }
 
-            SourcePath = filepath;
+            _sourcePath = filepath;
 
             SortImages();
             OnPropertyChanged("Images");
         }
 
-        public LocalImageLibrary(string directoryPath, Configuration config)
+        private LocalImageLibrary(string directoryPath, Configuration config)
         {
             //Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), Configuration
             Configuration = config;
             SetPath(directoryPath);
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            var handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

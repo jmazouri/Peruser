@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Peruser.Annotations;
 
 namespace Peruser
@@ -18,7 +21,7 @@ namespace Peruser
     public partial class BrowserWindow : Window, INotifyPropertyChanged
     {
         public ImageBrowser Browser { get; set; }
-        public ObservableCollection<IImageLibrary> Libraries { get; set; }
+        public ObservableCollection<ImageLibrary> Libraries { get; set; }
             
         Configuration Configuration { get; set; }
 
@@ -64,8 +67,28 @@ namespace Peruser
             }
 
             Browser = new ImageBrowser();
+            Libraries = new ObservableCollection<ImageLibrary>();
 
             InitializeComponent();
+
+            foreach (Type type in LibraryContainer.Container)
+            {
+                Button b = new Button();
+                b.DataContext = type;
+                b.Content =
+                    new Image()
+                    {
+                        Source =
+                            new BitmapImage(new Uri(type.GetProperty("IconPath").GetValue(null) as string,
+                                UriKind.Relative))
+                    };
+
+                b.Click += AddLibrary_OnClick;
+
+                b.Width = 24;
+
+                AddLibraryPanel.Children.Add(b);
+            }
 
             Timer t = new Timer(200);
             t.Elapsed += delegate
@@ -155,10 +178,19 @@ namespace Peruser
 
         private void LibraryTreeList_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            var value = e.NewValue as IImageLibrary;
+            var value = e.NewValue as ImageLibrary;
             if (value != null)
             {
                 Browser.SetLibrary(value);
+            }
+            else
+            {
+                var newValue = e.NewValue as ImageData;
+                if (newValue != null)
+                {
+                    Browser.SetLibrary(ImageLibrary.FindImageInLibraries(Libraries, newValue));
+                    Browser.SetIndexToImage(newValue);
+                }
             }
         }
 
@@ -194,10 +226,14 @@ namespace Peruser
             var button = sender as Button;
             if (button == null) return;
 
-            var imageLibrary = button.DataContext as IImageLibrary;
+            var imageLibrary = button.DataContext as Type;
             if (imageLibrary != null)
             {
-                
+                ImageLibrary newLibrary =
+                    imageLibrary.GetMethod("CreateLibrary").Invoke(null, new[] {Configuration}) as ImageLibrary;
+
+                Libraries.Add(newLibrary);
+                Browser.SetLibrary(newLibrary);
             }
             /*
              * Libraries.Add(newLibrary);

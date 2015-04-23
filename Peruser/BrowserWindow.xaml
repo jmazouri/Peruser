@@ -50,16 +50,8 @@
                 </TreeView.ItemTemplate>
             </TreeView>
 
-            <StackPanel Orientation="Horizontal" Grid.Column="0" HorizontalAlignment="Right" Grid.Row="1">
-                <ItemsControl ItemsSource="{Binding Libraries}"> 
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Button Click="AddLibrary_OnClick">
-                                <Image Source="{Binding IconPath}" Width="16"/>
-                            </Button>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+            <StackPanel Name="AddLibraryPanel" Orientation="Horizontal" Grid.Column="0" HorizontalAlignment="Right" Grid.Row="1">
+                
                 <!--
                 <Button Name="LoadRedditButton" Width="24" Click="LoadRedditButton_OnClick">
                     <Image Source="/Icons/imguricon.png"></Image>
@@ -102,8 +94,7 @@
                             <ColumnDefinition Width="55"/>
                             <ColumnDefinition Width="300*"/>
 
-                            <ColumnDefinition Width="124"/>
-                            <ColumnDefinition Width="57"/>
+                            <ColumnDefinition Width="180"/>
                         </Grid.ColumnDefinitions>
                     </Grid>
                 </ItemsPanelTemplate>
@@ -119,11 +110,11 @@
                 <TextBlock Name="FilePath" Text="{Binding Browser.CurrentImage.FileName, FallbackValue='File Path'}"/>
             </StatusBarItem>
 
-            <StatusBarItem Grid.Column="3">
-                <ComboBox Name="SortBox" SelectionChanged="ComboBox_SelectionChanged" SelectedIndex="2" ItemsSource="{Binding Browser.ValidSorts}" />
-            </StatusBarItem>
-            <StatusBarItem Grid.Column="4">
-                <Button Name="MuteButton" Click="MuteButton_OnClick" Content="Mute" MinWidth="50"/>
+            <StatusBarItem Grid.Column="3" HorizontalAlignment="Right">
+                <StackPanel Orientation="Horizontal">
+                    <ComboBox Name="SortBox" SelectionChanged="ComboBox_SelectionChanged" SelectedIndex="2" ItemsSource="{Binding Browser.ValidSorts}" />
+                    <Button Name="MuteButton" Click="MuteButton_OnClick" Content="Mute" MinWidth="50"/>
+                </StackPanel>
             </StatusBarItem>
         </StatusBar>
 

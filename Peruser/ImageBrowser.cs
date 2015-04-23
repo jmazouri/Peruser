@@ -7,7 +7,7 @@ namespace Peruser
 {
     public class ImageBrowser : INotifyPropertyChanged
     {
-        private IImageLibrary curImageLibrary;
+        private ImageLibrary curImageLibrary;
         private int _imageIndex;
 
         public ImageData CurrentImage
@@ -52,10 +52,11 @@ namespace Peruser
             }
         }
 
-        public void SetLibrary(IImageLibrary library)
+        public void SetLibrary(ImageLibrary library)
         {
             curImageLibrary = library;
             ImageIndex = 0;
+            OnPropertyChanged("ValidSorts");
         }
 
         private int ImageIndex
@@ -77,6 +78,16 @@ namespace Peruser
                 OnPropertyChanged();
                 OnPropertyChanged("CurrentImage");
                 OnPropertyChanged("ImageIndexDisp");
+            }
+        }
+
+        public void SetIndexToImage(ImageData image)
+        {
+            int foundIndex = curImageLibrary.Images.IndexOf(image);
+
+            if (foundIndex >= 0)
+            {
+                ImageIndex = foundIndex;
             }
         }
 
