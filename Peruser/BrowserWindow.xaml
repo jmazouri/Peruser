@@ -62,7 +62,7 @@
                 Focusable="False"
                 Width="4"/>
 
-            <controls:MediaUriElement Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" Name="MediaPlayerElement" Volume="30" Loop="True" Source="{Binding Browser.CurrentImage.Path}" MouseDown="MediaPlayerElement_MouseDown" Panel.ZIndex="-5"/>
+            <controls:MediaUriElement Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" Name="MediaPlayerElement" Volume="30" Loop="True" Source="{Binding Browser.CurrentImage.Path}" MouseDown="MediaPlayerElement_MouseDown" Panel.ZIndex="-5" MediaPositionChanged="MediaPlayerElement_OnMediaPositionChanged"/>
 
             <toast:Toasty Name="myToast" MinHeight="36" Height="36" VerticalAlignment="Bottom" Duration="0:0:0:1.5" Message="{Binding ToastMessage}"
                 FontFamily="Segoe UI" FontWeight="Bold" MessageColor="Orange" ActionColor="Yellow" Background="#A6000000"

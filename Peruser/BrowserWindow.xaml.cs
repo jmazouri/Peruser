@@ -77,7 +77,6 @@ namespace Peruser
                 TimeSpan duration = new TimeSpan(MediaPlayerElement.MediaDuration);
 
                 return position.ToString(@"mm\:ss") + "/" + duration.ToString(@"mm\:ss");
-                
             }
         }
 
@@ -150,13 +149,6 @@ namespace Peruser
                     }
                 }
             }
-
-            Timer t = new Timer(200);
-            t.Elapsed += delegate
-            {
-                OnPropertyChanged("MediaDurationFormatted");
-            };
-            t.Start();
         }
 
         private void BrowserWindow_KeyDown(object sender, KeyEventArgs e)
@@ -326,13 +318,19 @@ namespace Peruser
             else
             {
                 var newValue = LibraryTreeList.SelectedItem as ImageData;
-                if (newValue != null)
-                {
-                    ImageLibrary subLibrary = Browser.CurrentLibrary.CreateSubLibrary(newValue);
-                    Libraries.Add(subLibrary);
-                    Browser.SetLibrary(subLibrary);
-                }
+                if (newValue == null) return;
+
+                ImageLibrary subLibrary = Browser.CurrentLibrary.CreateSubLibrary(newValue);
+                if (subLibrary == null) return;
+
+                Libraries.Add(subLibrary);
+                Browser.SetLibrary(subLibrary);
             }
+        }
+
+        private void MediaPlayerElement_OnMediaPositionChanged(object sender, EventArgs e)
+        {
+            OnPropertyChanged("MediaDurationFormatted");
         }
     }
 }
