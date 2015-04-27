@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -23,8 +24,10 @@ namespace Peruser.ImageLibraries
             get { return "Icons/imguricon.png"; }
         }
 
+        public override string SourceUrl { get { return String.Format("http://imgur.com/r/{0}", _curSubreddit); } }
+
         private List<ImageData> _loadedImages;
-        public override ObservableCollection<ImageData> Images { get; set; }
+        public override ObservableCollection<ImageData> Images { get; protected set; }
 
         public override string[] SortKinds
         {
@@ -61,6 +64,7 @@ namespace Peruser.ImageLibraries
                     Path = (d.WebM ?? d.Link),
                     LastModified = Util.UnixTimeStampToDateTime(d.Datetime)
                 }).ToList();
+
         }
 
         private ImgurLibrary(string subreddit)

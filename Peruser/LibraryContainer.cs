@@ -26,9 +26,6 @@ namespace Peruser
                     _iocContainer = new List<Type>();
                     FileInfo[] allDlls = new DirectoryInfo(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "ImageLibraries")).GetFiles("*.dll");
 
-                    /*
-                    AppDomain.CurrentDomain.AssemblyResolve += (sender, args) => Assembly.LoadFile(new Uri(args.RequestingAssembly.CodeBase).AbsolutePath);
-                    */
                     foreach (var s in allDlls)
                     {
                         var assembly = Assembly.LoadFrom(s.FullName);

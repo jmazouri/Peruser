@@ -14,16 +14,31 @@ namespace Peruser
             get { return ""; }
         }
 
-        public abstract ObservableCollection<ImageData> Images { get; set; }
+        public virtual ObservableCollection<ImageData> Images { get; protected set; }
         public abstract string[] SortKinds { get; }
+
+
+
+        public abstract string SourceUrl { get; }
+        public abstract string Title { get; }
+        public abstract void SortImages(string sortkind);
+
+
+        public virtual ImageLibrary CreateSubLibrary(ImageData data)
+        {
+            return null;
+        }
+
+
+        public static ImageLibrary FindImageInLibraries(IEnumerable<ImageLibrary> libraries, ImageData image)
+        {
+            return libraries.FirstOrDefault(d => d.Images.Contains(image));
+        }
 
         public static ImageLibrary CreateLibrary(Configuration configuration)
         {
             return null;
         }
-
-        public abstract string Title { get; }
-        public abstract void SortImages(string sortkind);
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -34,9 +49,5 @@ namespace Peruser
             if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public static ImageLibrary FindImageInLibraries(IEnumerable<ImageLibrary> libraries, ImageData image)
-        {
-            return libraries.FirstOrDefault(d => d.Images.Contains(image));
-        }
     }
 }

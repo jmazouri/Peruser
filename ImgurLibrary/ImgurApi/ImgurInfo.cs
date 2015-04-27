@@ -7,11 +7,11 @@ using Peruser.ImgurApi;
 
 namespace ImgurLibrary.ImgurApi
 {
-    public class ImgurInfo
+    public static class ImgurInfo
     {
         public static List<ImgurImage> GetImagesFromSubreddit(string subreddit, string sort = "top", string window = "week")
         {
-            WebClient w = new WebClient();
+            var w = new WebClient();
             w.Headers.Add("Authorization", "Client-ID 5cc135541ec45ae");
 
             try
@@ -26,8 +26,6 @@ namespace ImgurLibrary.ImgurApi
             {
                 return new List<ImgurImage>();
             }
-            
-
         }
     }
 }

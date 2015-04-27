@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Peruser
 {
@@ -7,6 +8,7 @@ namespace Peruser
         public string Path { get; set; }
         public string FileName { get; set; }
         public DateTime LastModified { get; set; }
+        public Dictionary<string, string> ExtraData = new Dictionary<string, string>(); 
 
         public override string ToString()
         {

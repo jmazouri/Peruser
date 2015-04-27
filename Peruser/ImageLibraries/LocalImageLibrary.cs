@@ -24,8 +24,8 @@ namespace Peruser.ImageLibraries
             get { return "Icons/iconfolder.png"; }
         }
 
-        private List<ImageData> _images = new List<ImageData>(); 
-        public override ObservableCollection<ImageData> Images { get; set; }
+        private List<ImageData> _images = new List<ImageData>();
+        public override ObservableCollection<ImageData> Images { get; protected set; }
 
         public override string[] SortKinds
         {
@@ -58,6 +58,8 @@ namespace Peruser.ImageLibraries
             Images.Clear();
             foreach (ImageData img in _images) { Images.Add(img); }
         }
+
+        public override string SourceUrl { get { return _sourcePath; } }
 
         new public static ImageLibrary CreateLibrary(Configuration configuration)
         {

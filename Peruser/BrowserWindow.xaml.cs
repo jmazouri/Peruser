@@ -106,16 +106,23 @@ namespace Peruser
 
             foreach (Type type in LibraryContainer.Container)
             {
+                string imagePath = type.GetProperty("IconPath").GetValue(null) as string;
+
+                if (imagePath == null)
+                {
+                    continue;
+                }
+
                 Button b = new Button();
                 b.DataContext = type;
                 b.Content =
                     new Image()
                     {
                         Source =
-                            new BitmapImage(new Uri(type.GetProperty("IconPath").GetValue(null) as string,
-                                UriKind.Relative))
+                            new BitmapImage(new Uri(imagePath, UriKind.Relative))
                     };
 
+               
                 b.Click += AddLibrary_OnClick;
 
                 b.Width = 24;
@@ -306,6 +313,25 @@ namespace Peruser
             if (Uri.IsWellFormedUriString(Browser.CurrentImage.Path, UriKind.Absolute) || File.Exists(Browser.CurrentImage.Path))
             {
                 Process.Start(Browser.CurrentImage.Path);
+            }
+        }
+
+        private void LibraryTreeList_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var value = LibraryTreeList.SelectedItem as ImageLibrary;
+            if (value != null)
+            {
+                Process.Start(value.SourceUrl);
+            }
+            else
+            {
+                var newValue = LibraryTreeList.SelectedItem as ImageData;
+                if (newValue != null)
+                {
+                    ImageLibrary subLibrary = Browser.CurrentLibrary.CreateSubLibrary(newValue);
+                    Libraries.Add(subLibrary);
+                    Browser.SetLibrary(subLibrary);
+                }
             }
         }
     }

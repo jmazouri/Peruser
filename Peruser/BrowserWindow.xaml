@@ -6,11 +6,10 @@
         xmlns:controls="clr-namespace:WPFMediaKit.DirectShow.Controls;assembly=WPFMediaKit"
         xmlns:converters="clr-namespace:Peruser.Converters"
         xmlns:toast="clr-namespace:Toast;assembly=Toast"
-        mc:Ignorable="d"
-        Title="Peruser" Height="404" Width="749" 
-        DataContext="{Binding RelativeSource={RelativeSource Self}}" 
+        mc:Ignorable="d" Icon="Icons/perusericon.png"
+        Title="Peruser" DataContext="{Binding RelativeSource={RelativeSource Self}}" 
         KeyDown="BrowserWindow_KeyDown" MouseWheel="MediaPlayerElement_MouseWheel"
-        Icon="Icons/perusericon.png" MinWidth="350" MinHeight="200">
+        Height="404" Width="749" MinWidth="350" MinHeight="200">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -32,11 +31,11 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <TreeView Name="LibraryTreeList" Grid.Column="0" ItemsSource="{Binding Libraries}" SelectedItemChanged="LibraryTreeList_SelectedItemChanged" Panel.ZIndex="3">
+            <TreeView Name="LibraryTreeList" Grid.Column="0" ItemsSource="{Binding Libraries}" SelectedItemChanged="LibraryTreeList_SelectedItemChanged" Panel.ZIndex="3" MouseDoubleClick="LibraryTreeList_OnMouseDoubleClick">
 
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding Images}">
-                        <TextBlock Text="{Binding Path=Title}" />
+                        <TextBlock Text="{Binding Path=Title}" Width="{Binding ActualWidth, ElementName=LibraryTreeList, Converter={converters:MathConverter}, ConverterParameter=x-45}" TextWrapping="Wrap"/>
 
                         <HierarchicalDataTemplate.ItemTemplate >
                             <DataTemplate>

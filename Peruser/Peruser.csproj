@@ -160,6 +160,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Icons\chanboardicon.png" />
+    <Resource Include="Icons\chanthreadicon.png" />
     <Content Include="Icons\perusericon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

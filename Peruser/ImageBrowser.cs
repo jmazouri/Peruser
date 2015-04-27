@@ -66,6 +66,12 @@ namespace Peruser
             get { return _imageIndex; }
             set
             {
+                if (CurrentLibrary == null)
+                {
+                    _imageIndex = 0;
+                    return;
+                }
+
                 _imageIndex = value;
 
                 if (value < 0)
