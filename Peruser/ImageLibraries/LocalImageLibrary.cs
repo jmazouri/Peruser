@@ -11,8 +11,6 @@ namespace Peruser.ImageLibraries
 {
     public class LocalImageLibrary : ImageLibrary
     {
-        public Configuration Configuration { get; set; }
-
         private string _sourcePath = "";
         public override string Title
         {
@@ -61,13 +59,13 @@ namespace Peruser.ImageLibraries
 
         public override string SourceUrl { get { return _sourcePath; } }
 
-        new public static ImageLibrary CreateLibrary(Configuration configuration)
+        new public static ImageLibrary CreateLibrary()
         {
             CommonOpenFileDialog dialog = new CommonOpenFileDialog { IsFolderPicker = true };
 
             if (dialog.ShowDialog() != CommonFileDialogResult.Cancel)
             {
-                return new LocalImageLibrary(dialog.FileName, configuration);
+                return new LocalImageLibrary(dialog.FileName);
             }
 
             return null;
@@ -78,7 +76,7 @@ namespace Peruser.ImageLibraries
             _images.Clear();
             foreach (string s in Directory.GetFiles(filepath))
             {
-                if (Configuration.AllowedFileTypes.Contains(Path.GetExtension(s).Substring(1)))
+                if (Configuration.Current.AllowedFileTypes.Contains(Path.GetExtension(s).Substring(1)))
                 {
                     _images.Add(new ImageData
                     {
@@ -95,11 +93,10 @@ namespace Peruser.ImageLibraries
             OnPropertyChanged("Images");
         }
 
-        public LocalImageLibrary(string directoryPath, Configuration config)
+        public LocalImageLibrary(string directoryPath)
         {
             //Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), Configuration
             Images = new ObservableCollection<ImageData>();
-            Configuration = config;
             SetPath(directoryPath);
         }
     }

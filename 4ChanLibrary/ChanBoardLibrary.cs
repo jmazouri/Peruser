@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Peruser;
+using Peruser.Utilities;
 using _4ChanLibrary;
 
 namespace ChanLibrary
@@ -24,7 +25,7 @@ namespace ChanLibrary
 
         public override ObservableCollection<ImageData> Images { get; protected set; }
 
-        new public static ImageLibrary CreateLibrary(Configuration configuration)
+        new public static ImageLibrary CreateLibrary()
         {
             ChooseBoard boardDialog = new ChooseBoard();
             if (boardDialog.ShowDialog() == true)
@@ -48,11 +49,15 @@ namespace ChanLibrary
 
             foreach (ChanPost post in firstPosts.Select(d => d.ToObject<ChanPost>()).ToList())
             {
-                string strippedComment = ChanUtil.StripComment(post.Com, 50);
+                string strippedComment = ChanUtil.StripComment(post.Com, 120);
+                if (String.IsNullOrWhiteSpace(strippedComment))
+                {
+                    strippedComment = post.No.ToString();
+                }
 
                 Images.Add(new ImageData
                 {
-                    FileName = (strippedComment.Length >= 60 ? strippedComment.Substring(0, 59) : strippedComment),
+                    FileName = strippedComment,
                     LastModified = Util.UnixTimeStampToDateTime(post.Time),
                     Path = String.Format("http://i.4cdn.org/{0}/{1}{2}", board, post.Tim, post.Ext),
                     ExtraData = new Dictionary<string, string>

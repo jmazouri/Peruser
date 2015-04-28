@@ -9,7 +9,7 @@ namespace Peruser
 {
     public class ImageBrowser : INotifyPropertyChanged
     {
-        public ImageLibrary CurrentLibrary { get; set; }
+        public ImageLibrary CurrentLibrary { get; private set; }
         private int _imageIndex;
 
         public ImageData CurrentImage

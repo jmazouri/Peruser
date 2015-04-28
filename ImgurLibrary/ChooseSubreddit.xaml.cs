@@ -11,35 +11,37 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace ImgurLibrary
 {
     /// <summary>
     /// Interaction logic for ChooseSubreddit.xaml
     /// </summary>
-    public partial class ChooseSubreddit : Window
+    public partial class ChooseSubreddit : MetroWindow
     {
         public ChooseSubreddit()
         {
             InitializeComponent();
+            AllowsTransparency = true;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        async void DoInput()
         {
-            DialogResult = true;
-        }
-
-        public string Subreddit
-        {
-            get { return SubredditBox.Text; }
-        }
-
-        private void Window_KeyUp(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
+            Subreddit = await this.ShowInputAsync("Choose a Subreddit", "", new MetroDialogSettings
             {
-                DialogResult = true;
-            }
+                ColorScheme = MetroDialogColorScheme.Accented
+            });
+            DialogResult = true;
+            
+        }
+
+        public string Subreddit { get; private set; }
+
+        private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            DoInput();
         }
     }
 }

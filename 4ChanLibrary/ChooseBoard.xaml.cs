@@ -13,12 +13,13 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using MahApps.Metro.Controls;
 using Newtonsoft.Json.Linq;
 using Peruser;
 
 namespace ChanLibrary
 {
-    public partial class ChooseBoard : Window
+    public partial class ChooseBoard : MetroWindow
     {
         public ChooseBoard()
         {
@@ -32,6 +33,7 @@ namespace ChanLibrary
             BoardList = firstPosts.Select(d => d.ToObject<ChanBoard>()).ToList();
 
             InitializeComponent();
+            AllowsTransparency = true;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -55,6 +57,11 @@ namespace ChanLibrary
             {
                 SetBoard();
             }
+        }
+
+        private void CancelButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
         }
     }
 }

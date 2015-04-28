@@ -1,12 +1,29 @@
-﻿<Window x:Class="ChanLibrary.ChooseBoard"
+﻿<Controls:MetroWindow x:Class="ChanLibrary.ChooseBoard"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         Title="Choose a Thread" Height="110" Width="347"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        WindowStartupLocation="CenterScreen" KeyUp="Window_KeyUp">
+        WindowStartupLocation="CenterScreen" KeyUp="Window_KeyUp"
+        UseNoneWindowStyle="True" WindowStyle="None" ResizeMode="NoResize">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatButton.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
     <StackPanel Orientation="Vertical" Margin="4,0,4,4" >
-        <Label Content="Choose a Board"/>
-        <ComboBox Name="BoardSelector" ItemsSource="{Binding BoardList}" />
-        <Button Name="OkButton" Click="Button_Click" Width="34">OK</Button>
+        <Label Content="Choose a Board" FontSize="{StaticResource SubHeaderFontSize}"/>
+        <Controls:SplitButton Name="BoardSelector" ItemsSource="{Binding BoardList}" />
+        <DockPanel>
+            <Button Name="OkButton" Click="Button_Click" DockPanel.Dock="Left" Width="164">OK</Button>
+            <Button Name="CancelButton" Click="CancelButton_OnClick" DockPanel.Dock="Right">Cancel</Button>
+        </DockPanel>
     </StackPanel>
-</Window>
+</Controls:MetroWindow>

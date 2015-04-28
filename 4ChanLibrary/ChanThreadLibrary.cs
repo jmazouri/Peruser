@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Peruser;
+using Peruser.Utilities;
 using _4ChanLibrary;
 
 namespace ChanLibrary
@@ -26,7 +27,7 @@ namespace ChanLibrary
 
         public override ObservableCollection<ImageData> Images { get; protected set; }
 
-        new public static ImageLibrary CreateLibrary(Configuration configuration)
+        new public static ImageLibrary CreateLibrary()
         {
             ChooseThread threadDialog = new ChooseThread();
             if (threadDialog.ShowDialog() == true)

@@ -13,6 +13,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
 using Peruser.Annotations;
 using Peruser.ImageLibraries;
 
@@ -21,12 +23,11 @@ namespace Peruser
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class BrowserWindow : Window, INotifyPropertyChanged
+    public partial class BrowserWindow : MetroWindow, INotifyPropertyChanged
     {
         public string ToastMessage { get; set; }
         public ImageBrowser Browser { get; set; }
         public ObservableCollection<ImageLibrary> Libraries { get; set; }
-        private float _imageScale = 1;
 
         private int LibraryIndex
         {
@@ -55,8 +56,6 @@ namespace Peruser
             }
         }
             
-        Configuration Configuration { get; set; }
-
         private bool IsMuted = true;
 
         public string MediaDurationFormatted
@@ -80,28 +79,14 @@ namespace Peruser
             }
         }
 
-        void LoadSaveConfiguration()
-        {
-            string pathToConfig = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "config.json");
-            if (!File.Exists(pathToConfig))
-            {
-                File.WriteAllText(pathToConfig, Configuration.Serialize(new Configuration
-                {
-                    AllowedFileTypes = new[] { "webm", "jpg", "gif", "png", "jpeg", "bmp", "mp4", "avi", "mkv", "flv" }
-                }));
-            }
-
-            Configuration = Configuration.Deserialize(File.ReadAllText(pathToConfig));
-        }
-
         public BrowserWindow()
         {
-            LoadSaveConfiguration();
-
             Browser = new ImageBrowser();
             Libraries = new ObservableCollection<ImageLibrary>();
 
             InitializeComponent();
+
+            AllowsTransparency = true;
 
             foreach (Type type in LibraryContainer.Container)
             {
@@ -118,13 +103,15 @@ namespace Peruser
                     new Image()
                     {
                         Source =
-                            new BitmapImage(new Uri(imagePath, UriKind.Relative))
+                            new BitmapImage(new Uri(imagePath, UriKind.Relative)),
+                            Width = 16,
+                            Height = 16
                     };
 
-               
+                b.Style = (Style) FindResource("MetroCircleButtonStyle");
+                b.Width = 32;
+                b.Height = 32;
                 b.Click += AddLibrary_OnClick;
-
-                b.Width = 24;
 
                 AddLibraryPanel.Children.Add(b);
             }
@@ -137,18 +124,21 @@ namespace Peruser
 
                 if (Directory.Exists(dirPath))
                 {
-                    Libraries.Add(new LocalImageLibrary(dirPath, Configuration));
+                    Libraries.Add(new LocalImageLibrary(dirPath));
                 }
                 else
                 {
                     if (File.Exists(cmdLine))
                     {
-                        Libraries.Add(new LocalImageLibrary(Path.GetDirectoryName(cmdLine), Configuration));
+                        Libraries.Add(new LocalImageLibrary(Path.GetDirectoryName(cmdLine)));
                         Browser.SetLibrary(Libraries.First());
                         Browser.SetIndexToPath(cmdLine);
                     }
                 }
             }
+
+            IsMuted = Configuration.Current.Mute;
+            MuteButton_OnClick(null, null);
         }
 
         private void BrowserWindow_KeyDown(object sender, KeyEventArgs e)
@@ -185,7 +175,8 @@ namespace Peruser
                 {
                     Browser.NextImage();
                 }
-                
+
+                MediaZoombox.Focus();
             }
 
             if (e.Key == Key.Left)
@@ -205,22 +196,22 @@ namespace Peruser
                 {
                     Browser.PrevImage();
                 }
-                
+
+                MediaZoombox.Focus();
             }
 
-            e.Handled = true;
         }
 
         private void MuteButton_OnClick(object sender, RoutedEventArgs e)
         {
             if (IsMuted)
             {
-                MuteButton.Content = "Unmute";
+                MuteButton.Content = "unmute";
                 MediaPlayerElement.Volume = 0;
             }
             else
             {
-                MuteButton.Content = "Mute";
+                MuteButton.Content = "mute";
                 MediaPlayerElement.Volume = 30;
             }
 
@@ -239,14 +230,13 @@ namespace Peruser
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Browser.SortImages(e.AddedItems[0].ToString());
-            Focus();
             OnPropertyChanged("Libraries");
         }
 
         private void LibraryTreeList_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             var value = e.NewValue as ImageLibrary;
-            if (value != null)
+            if (value != null && value != Browser.CurrentLibrary)
             {
                 Browser.SetLibrary(value);
             }
@@ -261,19 +251,6 @@ namespace Peruser
             }
         }
 
-        private void MediaPlayerElement_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.MiddleButton == MouseButtonState.Pressed)
-            {
-                ScaleTransform scaleTransform1 = new ScaleTransform(1, 1, MediaPlayerElement.ActualWidth / 2, MediaPlayerElement.ActualHeight / 2);
-                MediaPlayerElement.RenderTransform = scaleTransform1;
-                _imageScale = 1;
-            }
-
-            //This is the only way to get the treeview to unfocus
-            MuteButton.Focus();
-        }
-
         private void AddLibrary_OnClick(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
@@ -282,22 +259,11 @@ namespace Peruser
             var imageLibrary = button.DataContext as Type;
             if (imageLibrary == null) return;
 
-            var newLibrary = imageLibrary.GetMethod("CreateLibrary").Invoke(null, new object[] {Configuration}) as ImageLibrary;
+            var newLibrary = imageLibrary.GetMethod("CreateLibrary").Invoke(null, null) as ImageLibrary;
             if (newLibrary == null) return;
 
             Libraries.Add(newLibrary);
             Browser.SetLibrary(newLibrary);
-        }
-
-        private void MediaPlayerElement_MouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            _imageScale += (e.Delta > 0 ? 0.06f : -0.06f);
-
-            double xCenter = Mouse.GetPosition(MediaPlayerElement).X;
-            double yCenter = Mouse.GetPosition(MediaPlayerElement).Y;
-
-            ScaleTransform scaleTransform1 = new ScaleTransform(_imageScale, _imageScale, xCenter, yCenter);
-            MediaPlayerElement.RenderTransform = scaleTransform1;
         }
 
         private void FilePath_MouseDown(object sender, MouseButtonEventArgs e)
@@ -331,6 +297,37 @@ namespace Peruser
         private void MediaPlayerElement_OnMediaPositionChanged(object sender, EventArgs e)
         {
             OnPropertyChanged("MediaDurationFormatted");
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            OptionsWindow window = new OptionsWindow();
+            window.ShowDialog();
+        }
+
+        private void MediaPlayerElement_OnMediaOpened(object sender, RoutedEventArgs e)
+        {
+            MediaPlayerElement.RenderTransform = new TranslateTransform();
+            MediaZoombox.FitToBounds();
+            MediaZoombox.Focus();
+        }
+
+        private void RemoveButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            Libraries.Remove(Browser.CurrentLibrary);
+            Browser.SetLibrary(Libraries.Any() ? Libraries[0] : null);
+            OnPropertyChanged("Libraries");
+        }
+
+        private void MediaZoombox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            Focus();
+        }
+
+        private void BrowserWindow_OnDeactivated(object sender, EventArgs e)
+        {
+            Window window = (Window)sender;
+            window.Topmost = Configuration.Current.AlwaysOnTop;
         }
     }
 }

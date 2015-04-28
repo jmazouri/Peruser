@@ -11,29 +11,43 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace ChanLibrary
 {
-    public partial class ChooseThread : Window
+    public partial class ChooseThread : MetroWindow
     {
         public ChooseThread()
         {
             InitializeComponent();
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            VerifyUrl();
+            AllowsTransparency = true;
         }
 
         public string Thread { get; set; }
         public string Board { get; set; }
 
-        private void VerifyUrl()
+        async void DoInput()
         {
+            string input = await this.ShowInputAsync("4Chan", "Input Thread URL", new MetroDialogSettings
+            {
+                ColorScheme = MetroDialogColorScheme.Accented
+            });
+            
+            VerifyUrl(input);
+        }
+
+        private void VerifyUrl(string input)
+        {
+            if (String.IsNullOrWhiteSpace(input))
+            {
+                DialogResult = false;
+                return;
+            }
+
             try
             {
-                Uri threadUri = new Uri(ThreadUrlBox.Text);
+                Uri threadUri = new Uri(input);
                 Thread = threadUri.Segments[3].TrimEnd('/');
                 Board = threadUri.Segments[1].TrimEnd('/');
 
@@ -45,12 +59,9 @@ namespace ChanLibrary
             }
         }
 
-        private void Window_KeyUp(object sender, KeyEventArgs e)
+        private void ChooseThread_OnLoaded(object sender, RoutedEventArgs e)
         {
-            if (e.Key == Key.Enter)
-            {
-                VerifyUrl();
-            }
+            DoInput();
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Peruser;
+using Peruser.Utilities;
 
 namespace _4ChanLibrary
 {

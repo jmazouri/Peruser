@@ -8,6 +8,7 @@ using ImgurLibrary;
 using ImgurLibrary.ImgurApi;
 using Peruser.Annotations;
 using Peruser.ImgurApi;
+using Peruser.Utilities;
 using Path = System.IO.Path;
 
 namespace Peruser.ImageLibraries
@@ -34,10 +35,10 @@ namespace Peruser.ImageLibraries
             get { return new[] { "Top - Day", "Top - Week", "Top - Month", "Top - Year", "Top - All", "Newest" }; }
         }
 
-        new public static ImageLibrary CreateLibrary(Configuration configuration)
+        new public static ImageLibrary CreateLibrary()
         {
             var dialog = new ChooseSubreddit();
-            return dialog.ShowDialog() == true ? new ImgurLibrary(dialog.Subreddit) : null;
+            return dialog.ShowDialog() == true && !String.IsNullOrWhiteSpace(dialog.Subreddit) ? new ImgurLibrary(dialog.Subreddit) : null;
         }
 
         public override string Title

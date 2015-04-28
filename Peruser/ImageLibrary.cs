@@ -35,7 +35,7 @@ namespace Peruser
             return libraries.FirstOrDefault(d => d.Images.Contains(image));
         }
 
-        public static ImageLibrary CreateLibrary(Configuration configuration)
+        public static ImageLibrary CreateLibrary()
         {
             return null;
         }

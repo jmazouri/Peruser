@@ -1,20 +1,45 @@
-﻿<Window x:Class="Peruser.BrowserWindow"
+﻿<Controls:MetroWindow x:Class="Peruser.BrowserWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:controls="clr-namespace:WPFMediaKit.DirectShow.Controls;assembly=WPFMediaKit"
+        xmlns:mediakit="clr-namespace:WPFMediaKit.DirectShow.Controls;assembly=WPFMediaKit"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:converters="clr-namespace:Peruser.Converters"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:toast="clr-namespace:Toast;assembly=Toast"
         mc:Ignorable="d" Icon="Icons/perusericon.png"
         Title="Peruser" DataContext="{Binding RelativeSource={RelativeSource Self}}" 
-        KeyDown="BrowserWindow_KeyDown" MouseWheel="MediaPlayerElement_MouseWheel"
-        Height="404" Width="749" MinWidth="350" MinHeight="200">
+        KeyDown="BrowserWindow_KeyDown"
+        Height="404" Width="749" MinWidth="350" MinHeight="200"
+        IgnoreTaskbarOnMaximize="True" Focusable="True" Deactivated="BrowserWindow_OnDeactivated"> 
+    
+    <Controls:MetroWindow.RightWindowCommands>
+        <Controls:WindowCommands>
+            <Button Click="Button_Click">
+                <StackPanel Orientation="Horizontal">
+                    <Rectangle Width="20" Height="20" Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Stretch="Fill">
+                                <VisualBrush.Visual>
+                                    <Image Source="Icons/optionsbutton.png"></Image>
+                                </VisualBrush.Visual>
+                            </VisualBrush>
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                    <TextBlock Margin="4 0 0 0"
+                   VerticalAlignment="Center"
+                   Text="settings" />
+                </StackPanel>
+            </Button>
+            <ToggleButton Name="MuteButton" Click="MuteButton_OnClick" Content="mute"/>
+        </Controls:WindowCommands>
+    </Controls:MetroWindow.RightWindowCommands>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
-            <RowDefinition Height="18" />
-            <RowDefinition Height="28" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="34" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -23,25 +48,26 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
-                <RowDefinition Height="20" />
+                <RowDefinition Height="32" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="250" MinWidth="100"/>
+                <ColumnDefinition Width="250"/>
                 <ColumnDefinition Width="4" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <TreeView Name="LibraryTreeList" Grid.Column="0" ItemsSource="{Binding Libraries}" SelectedItemChanged="LibraryTreeList_SelectedItemChanged" Panel.ZIndex="3" MouseDoubleClick="LibraryTreeList_OnMouseDoubleClick">
+            <TreeView Name="LibraryTreeList" Grid.Column="0" Focusable="False" ItemsSource="{Binding Libraries}" SelectedItemChanged="LibraryTreeList_SelectedItemChanged" Panel.ZIndex="3" MouseDoubleClick="LibraryTreeList_OnMouseDoubleClick">
 
                 <TreeView.ItemTemplate>
-                    <HierarchicalDataTemplate ItemsSource="{Binding Images}">
-                        <TextBlock Text="{Binding Path=Title}" Width="{Binding ActualWidth, ElementName=LibraryTreeList, Converter={converters:MathConverter}, ConverterParameter=x-45}" TextWrapping="Wrap"/>
+                    <HierarchicalDataTemplate ItemsSource="{Binding Images}" AlternationCount="2" ItemContainerStyle="{StaticResource alternatingStyle}">
+                        <Border Padding="0 0 0 6" BorderThickness="0 0 0 1" BorderBrush="LightGray">
+                            <TextBlock Text="{Binding Path=Title}" Width="{Binding ActualWidth, ElementName=LibraryTreeList, Converter={converters:MathConverter}, ConverterParameter=x-45}" TextWrapping="Wrap"/>
+                        </Border>
 
-                        <HierarchicalDataTemplate.ItemTemplate >
+                        <HierarchicalDataTemplate.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
-                                    <Image Source="/Icons/imageicon.png" Width="16" Height="16" VerticalAlignment="Top"/>
-                                    <TextBlock Text="{Binding FileName}" Width="{Binding ActualWidth, ElementName=LibraryTreeList, Converter={converters:MathConverter}, ConverterParameter=x-78}" TextWrapping="Wrap" />
+                                    <TextBlock Padding="2" Text="{Binding FileName}" Width="{Binding ActualWidth, ElementName=LibraryTreeList, Converter={converters:MathConverter}, ConverterParameter=x-35}" TextWrapping="Wrap" />
                                 </StackPanel>
                             </DataTemplate>
                         </HierarchicalDataTemplate.ItemTemplate>
@@ -50,7 +76,11 @@
                 </TreeView.ItemTemplate>
             </TreeView>
 
-            <StackPanel Name="AddLibraryPanel" Orientation="Horizontal" Grid.Column="0" HorizontalAlignment="Right" Grid.Row="1" />
+            <DockPanel Grid.Column="0" Grid.Row="1">
+                <Button Name="RemoveButton" Click="RemoveButton_OnClick" DockPanel.Dock="Left" Padding="0 0 1 1" Width="32" Height="32" Background="#AF1E00" Foreground="White" FontSize="16" Style="{DynamicResource MetroCircleButtonStyle}">X</Button>
+                <StackPanel Name="AddLibraryPanel" Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right"></StackPanel>
+            </DockPanel>
+            
 
             <GridSplitter Grid.Column="1" 
                 Grid.Row="0"
@@ -62,17 +92,20 @@
                 Focusable="False"
                 Width="4"/>
 
-            <controls:MediaUriElement Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" Name="MediaPlayerElement" Volume="30" Loop="True" Source="{Binding Browser.CurrentImage.Path}" MouseDown="MediaPlayerElement_MouseDown" Panel.ZIndex="-5" MediaPositionChanged="MediaPlayerElement_OnMediaPositionChanged"/>
+            <xctk:Zoombox Name="MediaZoombox" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" ZoomOn="View" Focusable="True" GotFocus="MediaZoombox_GotFocus">
+                <mediakit:MediaUriElement  Name="MediaPlayerElement" Volume="30" Loop="True" Source="{Binding Browser.CurrentImage.Path}" Panel.ZIndex="-5" MediaPositionChanged="MediaPlayerElement_OnMediaPositionChanged" MediaOpened="MediaPlayerElement_OnMediaOpened"/>
+            </xctk:Zoombox>
+            
 
-            <toast:Toasty Name="myToast" MinHeight="36" Height="36" VerticalAlignment="Bottom" Duration="0:0:0:1.5" Message="{Binding ToastMessage}"
-                FontFamily="Segoe UI" FontWeight="Bold" MessageColor="Orange" ActionColor="Yellow" Background="#A6000000"
+            <toast:Toasty Name="myToast" MinHeight="36" Height="36" VerticalAlignment="Bottom" Duration="0:0:0:2" Message="{Binding ToastMessage}"
+                FontFamily="Segoe UI" FontWeight="Bold" MessageColor="White" ActionColor="Yellow" Background="#41B0E0"
                 FontSize="28" Grid.Row="0" Grid.Column="2" Grid.RowSpan="2"/>
         </Grid>
 
 
         <Slider Grid.Row="1" Value="{Binding MediaPosition, ElementName=MediaPlayerElement}"
-                    Maximum="{Binding MediaDuration, ElementName=MediaPlayerElement}"
-                    Minimum="0" IsMoveToPointEnabled="True" IsTabStop="False" />
+                    Maximum="{Binding MediaDuration, ElementName=MediaPlayerElement}" IsTabStop="False"
+                    Style="{DynamicResource FlatSlider}" Minimum="0" IsMoveToPointEnabled="True" Width="Auto" />
 
         <StatusBar Grid.Row="2">
             <StatusBar.ItemsPanel>
@@ -103,12 +136,9 @@
             </StatusBarItem>
 
             <StatusBarItem Grid.Column="3" HorizontalAlignment="Right">
-                <StackPanel Orientation="Horizontal">
-                    <ComboBox Name="SortBox" SelectionChanged="ComboBox_SelectionChanged" ItemsSource="{Binding Browser.ValidSorts}" />
-                    <Button Name="MuteButton" Click="MuteButton_OnClick" Content="Mute" MinWidth="50"/>
-                </StackPanel>
+                <ComboBox Name="SortBox" SelectionChanged="ComboBox_SelectionChanged" Focusable="False" ItemsSource="{Binding Browser.ValidSorts}" />
             </StatusBarItem>
         </StatusBar>
 
     </Grid>
-</Window>
+</Controls:MetroWindow>
