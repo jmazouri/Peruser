@@ -28,7 +28,6 @@ namespace Peruser.ImageLibraries
         public override string SourceUrl { get { return String.Format("http://imgur.com/r/{0}", _curSubreddit); } }
 
         private List<ImageData> _loadedImages;
-        public override ObservableCollection<ImageData> Images { get; protected set; }
 
         public override string[] SortKinds
         {
