@@ -41,9 +41,6 @@
             <RowDefinition Height="12" />
             <RowDefinition Height="34" />
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
 
         <Grid>
             <Grid.RowDefinitions>
@@ -66,9 +63,7 @@
 
                         <HierarchicalDataTemplate.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Padding="2" Text="{Binding FileName}" Width="{Binding ActualWidth, ElementName=LibraryTreeList, Converter={converters:MathConverter}, ConverterParameter=x-35}" TextWrapping="Wrap" />
-                                </StackPanel>
+                                <TextBlock Padding="2" Text="{Binding FileName}" Width="{Binding ActualWidth, ElementName=LibraryTreeList, Converter={converters:MathConverter}, ConverterParameter=x-35}" TextWrapping="Wrap" />
                             </DataTemplate>
                         </HierarchicalDataTemplate.ItemTemplate>
 
@@ -80,28 +75,17 @@
                 <Button Name="RemoveButton" Click="RemoveButton_OnClick" DockPanel.Dock="Left" Padding="0 0 1 1" Width="32" Height="32" Background="#AF1E00" Foreground="White" FontSize="16" Style="{DynamicResource MetroCircleButtonStyle}">X</Button>
                 <StackPanel Name="AddLibraryPanel" Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right"></StackPanel>
             </DockPanel>
-            
 
-            <GridSplitter Grid.Column="1" 
-                Grid.Row="0"
-                Grid.RowSpan="2" 
-                HorizontalAlignment="Left" 
-                VerticalAlignment="Stretch"
-                Background="Silver" 
-                ShowsPreview="true"
-                Focusable="False"
-                Width="4"/>
+            <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="Silver" 
+                ShowsPreview="False" Focusable="False" Width="4"/>
 
             <xctk:Zoombox Name="MediaZoombox" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" ZoomOn="View" Focusable="True" GotFocus="MediaZoombox_GotFocus">
                 <mediakit:MediaUriElement  Name="MediaPlayerElement" Volume="30" Loop="True" Source="{Binding Browser.CurrentImage.Path}" Panel.ZIndex="-5" MediaPositionChanged="MediaPlayerElement_OnMediaPositionChanged" MediaOpened="MediaPlayerElement_OnMediaOpened"/>
             </xctk:Zoombox>
             
-
             <toast:Toasty Name="myToast" MinHeight="36" Height="36" VerticalAlignment="Bottom" Duration="0:0:0:2" Message="{Binding ToastMessage}"
-                FontFamily="Segoe UI" FontWeight="Bold" MessageColor="White" ActionColor="Yellow" Background="#41B0E0"
-                FontSize="28" Grid.Row="0" Grid.Column="2" Grid.RowSpan="2"/>
+                FontFamily="Segoe UI" FontWeight="Bold" MessageColor="White" Background="#41B0E0" FontSize="28" Grid.Row="0" Grid.Column="2" Grid.RowSpan="2"/>
         </Grid>
-
 
         <Slider Grid.Row="1" Value="{Binding MediaPosition, ElementName=MediaPlayerElement}"
                     Maximum="{Binding MediaDuration, ElementName=MediaPlayerElement}" IsTabStop="False"
@@ -136,7 +120,7 @@
             </StatusBarItem>
 
             <StatusBarItem Grid.Column="3" HorizontalAlignment="Right">
-                <ComboBox Name="SortBox" SelectionChanged="ComboBox_SelectionChanged" Focusable="False" ItemsSource="{Binding Browser.ValidSorts}" />
+                <ComboBox Name="SortBox" SelectionChanged="ComboBox_SelectionChanged" Focusable="False" Width="100" ItemsSource="{Binding Browser.ValidSorts}" />
             </StatusBarItem>
         </StatusBar>
 

@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using CsQuery;
-using CsQuery.ExtensionMethods;
 using Peruser;
 
 namespace WebpageLibrary

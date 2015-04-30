@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Peruser;
+﻿using System.Text.RegularExpressions;
 using Peruser.Utilities;
 
 namespace _4ChanLibrary

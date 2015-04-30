@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Windows.Input;
 using Peruser.Annotations;
 
 namespace Peruser
@@ -20,7 +19,7 @@ namespace Peruser
                 {
                     return new ImageData
                     {
-                        FileName = "Nothing",
+                        FileName = "",
                         Path = "",
                         LastModified = DateTime.Now
                     };
@@ -36,7 +35,7 @@ namespace Peruser
             {
                 if (CurrentLibrary == null)
                 {
-                    return "No Images";
+                    return "";
                 }
                 return (ImageIndex + 1) + "/" + CurrentLibrary.Images.Count;
             }

@@ -1,20 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using MahApps.Metro.Controls;
-using MahApps.Metro.Controls.Dialogs;
 using Peruser.Annotations;
 using Peruser.ImageLibraries;
 
@@ -64,7 +60,7 @@ namespace Peruser
             {
                 if (MediaPlayerElement.MediaDuration == 0)
                 {
-                    return "00:00/00:00";
+                    return "";
                 }
 
                 if (MediaPlayerElement.MediaPosition > MediaPlayerElement.MediaDuration)

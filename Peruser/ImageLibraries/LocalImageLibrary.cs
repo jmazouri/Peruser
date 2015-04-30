@@ -1,11 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using Peruser.Annotations;
 
 namespace Peruser.ImageLibraries
 {

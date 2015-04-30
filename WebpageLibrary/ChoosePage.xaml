@@ -5,7 +5,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         Title="Scrape Webpage" Height="247" Width="403"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        WindowStartupLocation="CenterScreen" 
+        WindowStartupLocation="CenterScreen" ShowMaxRestoreButton="False" ShowMinButton="False"
         UseNoneWindowStyle="True" WindowStyle="None" ResizeMode="NoResize">
     <Window.Resources>
         <ResourceDictionary>

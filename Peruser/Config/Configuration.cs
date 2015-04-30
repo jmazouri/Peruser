@@ -2,8 +2,6 @@
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Security.Policy;
-using System.Threading;
 using Newtonsoft.Json;
 using Peruser.Annotations;
 
@@ -15,6 +13,7 @@ namespace Peruser
         private bool _alwaysOnTop;
         private bool _mute;
 
+        [DisplayName("Allowed File Types")]
         public string[] AllowedFileTypes
         {
             get { return _allowedFileTypes; }
@@ -26,6 +25,7 @@ namespace Peruser
             }
         }
 
+        [DisplayName("Always on Top")]
         public bool AlwaysOnTop
         {
             get { return _alwaysOnTop; }
@@ -37,6 +37,7 @@ namespace Peruser
             }
         }
 
+        [DisplayName("Mute on Startup")]
         public bool Mute
         {
             get { return _mute; }

@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using ImgurLibrary;
 using ImgurLibrary.ImgurApi;
-using Peruser.Annotations;
-using Peruser.ImgurApi;
 using Peruser.Utilities;
-using Path = System.IO.Path;
 
 namespace Peruser.ImageLibraries
 {
