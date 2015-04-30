@@ -69,6 +69,9 @@ namespace Peruser
                 if (CurrentLibrary == null)
                 {
                     _imageIndex = 0;
+                    OnPropertyChanged();
+                    OnPropertyChanged("CurrentImage");
+                    OnPropertyChanged("ImageIndexDisp");
                     return;
                 }
 

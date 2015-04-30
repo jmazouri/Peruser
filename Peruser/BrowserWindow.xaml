@@ -60,7 +60,7 @@
 
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding Images}" AlternationCount="2" ItemContainerStyle="{StaticResource alternatingStyle}">
-                        <Border Padding="0 0 0 6" BorderThickness="0 0 0 1" BorderBrush="LightGray">
+                        <Border Padding="3 0 0 3" BorderThickness="0 0 0 1" BorderBrush="LightGray">
                             <TextBlock Text="{Binding Path=Title}" Width="{Binding ActualWidth, ElementName=LibraryTreeList, Converter={converters:MathConverter}, ConverterParameter=x-45}" TextWrapping="Wrap"/>
                         </Border>
 

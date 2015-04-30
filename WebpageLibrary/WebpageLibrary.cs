@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -33,7 +34,7 @@ namespace WebpageLibrary
 
         public override void SortImages(string sortkind)
         {
-            
+            //I dunno lol
         }
 
         new public static string IconPath
@@ -41,24 +42,39 @@ namespace WebpageLibrary
             get { return "Icons/webpageicon.png"; }
         }
 
-        private WebpageLibrary(Uri url, Dictionary<string, string> cookies)
+        public IEnumerable<ImageData> ScrapePage(WebpageConfig configuration)
         {
             WebClient w = new WebClient();
 
             //super high level hacks
-            w.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.90 Safari/537.36");
+            w.Headers.Add(HttpRequestHeader.UserAgent, configuration.UserAgent);
 
-            foreach (var entry in cookies)
+            foreach (var entry in configuration.RealCookies)
             {
                 w.Headers.Add(HttpRequestHeader.Cookie, String.Format("{0}={1}", entry.Key, entry.Value));
             }
 
+            Uri url = new Uri(configuration.PageUrl);
             CQ dom = w.DownloadString(url);
-            var allImages = dom[":not(a) > img"].ToList();
+
+            w.Dispose();
+
+            var allImages = dom["img"].ToList();
+
+            if (configuration.SkipImagesInsideLinks)
+            {
+                //Don't get images within links, ie thumbnails
+                allImages = dom[":not(a) > img"].ToList();
+            }
+
             var allLinks = dom["a"].ToList();
             var allVideos = dom["video > source:first-child"].ToList();
 
             _pageTitle = dom["title"].Text().Trim();
+            if (configuration.TitleOverride != null)
+            {
+                _pageTitle = configuration.TitleOverride;
+            }
             _sourceUrl = url.ToString();
 
             var imageLinks = allImages.Select(d => d.GetAttribute("src"));
@@ -68,12 +84,13 @@ namespace WebpageLibrary
             Uri baseUri = new Uri(url.Scheme + "://" + url.Host + String.Join("", url.Segments.Reverse().Skip(1).Reverse()));
             Uri newUri;
 
+            //This can probably made a bit cleaner, but it works
             List<ImageData> genericLinks = imageLinks.Union(textLinks).Union(vidLinks)
                 .Distinct()
                 .Where(d => !String.IsNullOrWhiteSpace(Path.GetExtension(d)))
                 .Where(d => Configuration.Current.AllowedFileTypes.Contains(Path.GetExtension(d).Substring(1).ToLower()))
                 .Select(d => IsOkayUri(d, baseUri, out newUri) ? newUri : null)
-                .Where(d=>d != null)
+                .Where(d => d != null)
                 .Select(d => new ImageData
                 {
                     FileName = Path.GetFileName(d.ToString()),
@@ -81,7 +98,12 @@ namespace WebpageLibrary
                     Path = (d.IsAbsoluteUri ? d.ToString() : new Uri(baseUri, d).ToString())
                 }).ToList();
 
-            Images = new ObservableCollection<ImageData>(genericLinks);
+            return genericLinks;
+        }
+
+        private WebpageLibrary(WebpageConfig configuration)
+        {
+            Images = new ObservableCollection<ImageData>(ScrapePage(configuration));
         }
 
         private bool IsOkayUri(string u, Uri baseUri, out Uri newUri)
@@ -114,7 +136,13 @@ namespace WebpageLibrary
 
         new public static ImageLibrary CreateLibrary()
         {
-            return new WebpageLibrary(new Uri("http://boards.4chan.org/a/"), new Dictionary<string, string>());
+            ChoosePage dialog = new ChoosePage();
+            if (dialog.ShowDialog() == true)
+            {
+                return new WebpageLibrary(dialog.Config);
+            }
+
+            return null;
         }
     }
 }

@@ -1,0 +1,30 @@
+﻿<Controls:MetroWindow x:Class="WebpageLibrary.ChoosePage"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        Title="Scrape Webpage" Height="247" Width="403"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        WindowStartupLocation="CenterScreen" 
+        UseNoneWindowStyle="True" WindowStyle="None" ResizeMode="NoResize">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatButton.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <StackPanel Orientation="Vertical" Margin="4,0,4,4" >
+        <Label Content="Options" FontSize="{StaticResource SubHeaderFontSize}"/>
+        <xctk:PropertyGrid SelectedObject="{Binding Config}" ShowSearchBox="False" ShowTitle="False" NameColumnWidth="175" ShowSortOptions="False" ShowSummary="False" IsCategorized="False" Height="129"></xctk:PropertyGrid>
+        <DockPanel>
+            <Button Name="OkButton" DockPanel.Dock="Left" Width="200" Click="OkButton_Click">Go</Button>
+            <Button Name="CancelButton" DockPanel.Dock="Right" Click="CancelButton_Click">Cancel</Button>
+        </DockPanel>
+    </StackPanel>
+</Controls:MetroWindow>
