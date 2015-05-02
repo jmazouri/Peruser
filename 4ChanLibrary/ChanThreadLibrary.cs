@@ -32,8 +32,6 @@ namespace ChanLibrary
             return null;
         }
 
-        
-
         internal ChanThreadLibrary(string board, string threadId)
         {
             _boardName = board;
@@ -62,19 +60,9 @@ namespace ChanLibrary
             _sourceUrl = String.Format("http://boards.4chan.org/{0}/thread/{1}/", board, threadId);
         }
 
-        public override string[] SortKinds
-        {
-            get { return new[] {"Last Post"}; }
-        }
-
         public override string Title
         {
             get { return String.Format("{0} - /{1}/", _postTitle, _boardName); }
-        }
-
-        public override void SortImages(string sortkind)
-        {
-            //Uhh... nothing
         }
 
         private string _sourceUrl;

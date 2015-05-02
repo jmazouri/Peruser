@@ -1,21 +1,23 @@
-﻿<Controls:MetroWindow x:Class="Peruser.BrowserWindow"
+﻿<controls:MetroWindow x:Class="Peruser.BrowserWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:mediakit="clr-namespace:WPFMediaKit.DirectShow.Controls;assembly=WPFMediaKit"
-        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:converters="clr-namespace:Peruser.Converters"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        xmlns:toast="clr-namespace:Toast;assembly=Toast"
-        mc:Ignorable="d" Icon="Icons/perusericon.png"
+        xmlns:w="clr-namespace:Peruser"
+        xmlns:toast="clr-namespace:Toast;assembly=Toast" Icon="Icons/perusericon.png"
         Title="Peruser" DataContext="{Binding RelativeSource={RelativeSource Self}}" 
         KeyDown="BrowserWindow_KeyDown"
         Height="404" Width="749" MinWidth="350" MinHeight="200"
-        IgnoreTaskbarOnMaximize="True" Focusable="True" Deactivated="BrowserWindow_OnDeactivated"> 
+        IgnoreTaskbarOnMaximize="True" Focusable="True" Deactivated="BrowserWindow_OnDeactivated">
     
-    <Controls:MetroWindow.RightWindowCommands>
-        <Controls:WindowCommands>
+    <controls:MetroWindow.CommandBindings>
+        <CommandBinding Command="w:GlobalCommands.DeleteLibrary" Executed="CommandBinding_DeleteLibrary" />
+    </controls:MetroWindow.CommandBindings>
+    
+    <controls:MetroWindow.RightWindowCommands>
+        <controls:WindowCommands>
             <Button Click="Button_Click">
                 <StackPanel Orientation="Horizontal">
                     <Rectangle Width="20" Height="20" Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
@@ -33,8 +35,9 @@
                 </StackPanel>
             </Button>
             <ToggleButton Name="MuteButton" Click="MuteButton_OnClick" Content="mute"/>
-        </Controls:WindowCommands>
-    </Controls:MetroWindow.RightWindowCommands>
+        </controls:WindowCommands>
+    </controls:MetroWindow.RightWindowCommands>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -58,7 +61,13 @@
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding Images}" AlternationCount="2" ItemContainerStyle="{StaticResource alternatingStyle}">
                         <Border Padding="3 0 0 3" BorderThickness="0 0 0 1" BorderBrush="LightGray">
-                            <TextBlock Text="{Binding Path=Title}" Width="{Binding ActualWidth, ElementName=LibraryTreeList, Converter={converters:MathConverter}, ConverterParameter=x-45}" TextWrapping="Wrap"/>
+                            <TextBlock Text="{Binding Path=Title}" Width="{Binding ActualWidth, ElementName=LibraryTreeList, Converter={converters:MathConverter}, ConverterParameter=x-45}" TextWrapping="Wrap">
+                                <TextBlock.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Delete" Command="w:GlobalCommands.DeleteLibrary" CommandParameter="{Binding RelativeSource={RelativeSource TemplatedParent}}" />
+                                    </ContextMenu>
+                                </TextBlock.ContextMenu>
+                            </TextBlock>
                         </Border>
 
                         <HierarchicalDataTemplate.ItemTemplate>
@@ -72,15 +81,14 @@
             </TreeView>
 
             <DockPanel Grid.Column="0" Grid.Row="1">
-                <Button Name="RemoveButton" Click="RemoveButton_OnClick" DockPanel.Dock="Left" Padding="0 0 1 1" Width="32" Height="32" Background="#AF1E00" Foreground="White" FontSize="16" Style="{DynamicResource MetroCircleButtonStyle}">X</Button>
                 <StackPanel Name="AddLibraryPanel" Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right"></StackPanel>
             </DockPanel>
 
             <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="Silver" 
                 ShowsPreview="False" Focusable="False" Width="4"/>
 
-            <xctk:Zoombox Name="MediaZoombox" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" ZoomOn="View" Focusable="True" GotFocus="MediaZoombox_GotFocus">
-                <mediakit:MediaUriElement  Name="MediaPlayerElement" Volume="30" Loop="True" Source="{Binding Browser.CurrentImage.Path}" Panel.ZIndex="-5" MediaPositionChanged="MediaPlayerElement_OnMediaPositionChanged" MediaOpened="MediaPlayerElement_OnMediaOpened"/>
+            <xctk:Zoombox Name="MediaZoombox" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" ZoomOn="View" Focusable="True">
+                <mediakit:MediaUriElement Focusable="False" Name="MediaPlayerElement" Volume="30" Loop="True" Source="{Binding Browser.CurrentImage.Path}" Panel.ZIndex="-5" MediaPositionChanged="MediaPlayerElement_OnMediaPositionChanged" MediaOpened="MediaPlayerElement_OnMediaOpened"/>
             </xctk:Zoombox>
             
             <toast:Toasty Name="myToast" MinHeight="36" Height="36" VerticalAlignment="Bottom" Duration="0:0:0:2" Message="{Binding ToastMessage}"
@@ -125,4 +133,4 @@
         </StatusBar>
 
     </Grid>
-</Controls:MetroWindow>
+</controls:MetroWindow>

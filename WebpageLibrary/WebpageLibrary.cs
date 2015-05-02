@@ -11,11 +11,6 @@ namespace WebpageLibrary
 {
     public class WebpageLibrary : ImageLibrary
     {
-        public override string[] SortKinds
-        {
-            get { return new[] {"Page Order"}; }
-        }
-
         private string _sourceUrl;
         public override string SourceUrl
         {
@@ -26,11 +21,6 @@ namespace WebpageLibrary
         public override string Title
         {
             get { return _pageTitle; }
-        }
-
-        public override void SortImages(string sortkind)
-        {
-            //I dunno lol
         }
 
         new public static string IconPath
@@ -67,7 +57,7 @@ namespace WebpageLibrary
             var allVideos = dom["video > source:first-child"].ToList();
 
             _pageTitle = dom["title"].Text().Trim();
-            if (configuration.TitleOverride != null)
+            if (String.IsNullOrWhiteSpace(configuration.TitleOverride))
             {
                 _pageTitle = configuration.TitleOverride;
             }

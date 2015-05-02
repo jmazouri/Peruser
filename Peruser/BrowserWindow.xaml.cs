@@ -29,7 +29,6 @@ namespace Peruser
         {
             get
             {
-                //Browser.SetLibrary(Libraries[Libraries.IndexOf(Browser.CurrentLibrary) + 1]);
                 return Libraries.IndexOf(Browser.CurrentLibrary);
             }
             set
@@ -83,6 +82,8 @@ namespace Peruser
             InitializeComponent();
 
             AllowsTransparency = true;
+            
+            Style buttonStyle = (Style) FindResource("MetroCircleButtonStyle");
 
             foreach (Type type in LibraryContainer.Container)
             {
@@ -93,20 +94,20 @@ namespace Peruser
                     continue;
                 }
 
-                Button b = new Button();
-                b.DataContext = type;
-                b.Content =
-                    new Image()
+                Button b = new Button
+                {
+                    DataContext = type,
+                    Content = new Image()
                     {
-                        Source =
-                            new BitmapImage(new Uri(imagePath, UriKind.Relative)),
-                            Width = 16,
-                            Height = 16
-                    };
+                        Source = new BitmapImage(new Uri(imagePath, UriKind.Relative)),
+                        Width = 16,
+                        Height = 16
+                    },
+                    Style = buttonStyle,
+                    Width = 32,
+                    Height = 32
+                };
 
-                b.Style = (Style) FindResource("MetroCircleButtonStyle");
-                b.Width = 32;
-                b.Height = 32;
                 b.Click += AddLibrary_OnClick;
 
                 AddLibraryPanel.Children.Add(b);
@@ -214,15 +215,6 @@ namespace Peruser
             IsMuted = !IsMuted;
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            var handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
-        }
-
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Browser.SortImages(e.AddedItems[0].ToString());
@@ -234,14 +226,14 @@ namespace Peruser
             var value = e.NewValue as ImageLibrary;
             if (value != null && value != Browser.CurrentLibrary)
             {
-                Browser.SetLibrary(value);
+                LibraryIndex = Libraries.IndexOf(value);
             }
             else
             {
                 var newValue = e.NewValue as ImageData;
                 if (newValue != null)
                 {
-                    Browser.SetLibrary(ImageLibrary.FindImageInLibraries(Libraries, newValue));
+                    LibraryIndex = Libraries.IndexOf(ImageLibrary.FindImageInLibraries(Libraries, newValue));
                     Browser.SetIndexToImage(newValue);
                 }
             }
@@ -308,22 +300,26 @@ namespace Peruser
             MediaZoombox.Focus();
         }
 
-        private void RemoveButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            Libraries.Remove(Browser.CurrentLibrary);
-            Browser.SetLibrary(Libraries.Any() ? Libraries[0] : null);
-            OnPropertyChanged("Libraries");
-        }
-
-        private void MediaZoombox_GotFocus(object sender, RoutedEventArgs e)
-        {
-            Focus();
-        }
-
         private void BrowserWindow_OnDeactivated(object sender, EventArgs e)
         {
             Window window = (Window)sender;
             window.Topmost = Configuration.Current.AlwaysOnTop;
+        }
+
+        private void CommandBinding_DeleteLibrary(object sender, ExecutedRoutedEventArgs e)
+        {
+            Libraries.Remove((e.Parameter as ContentPresenter).Content as ImageLibrary);
+            Browser.SetLibrary(Libraries.Any() ? Libraries[0] : null);
+            OnPropertyChanged("Libraries");
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            var handler = PropertyChanged;
+            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

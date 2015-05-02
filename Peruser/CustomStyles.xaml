@@ -1,6 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:w="clr-namespace:Peruser"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Style x:Key="alternatingStyle" TargetType="{x:Type TreeViewItem}">
+        
         <Setter Property="Background" Value="#B9E2F5"></Setter>
         <Style.Triggers>
             <Trigger Property="ItemsControl.AlternationIndex" Value="0">
@@ -8,6 +10,9 @@
             </Trigger>
             <Trigger Property="ItemsControl.AlternationIndex" Value="1">
                 <Setter Property="Background" Value="#E0E0E0"></Setter>
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="FontWeight" Value="Bold" />
             </Trigger>
         </Style.Triggers>
     </Style>

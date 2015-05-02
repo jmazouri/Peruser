@@ -140,6 +140,7 @@
     </ApplicationDefinition>
     <Compile Include="Config\Configuration.cs" />
     <Compile Include="Converters\MathConverter.cs" />
+    <Compile Include="GlobalCommands.cs" />
     <Compile Include="ImageLibraries\LocalImageLibrary.cs" />
     <Compile Include="ImageLibrary.cs" />
     <Compile Include="ImageData.cs" />

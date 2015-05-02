@@ -15,14 +15,35 @@ namespace Peruser
         }
 
         public virtual ObservableCollection<ImageData> Images { get; protected set; }
-        public abstract string[] SortKinds { get; }
 
-
+        public virtual string[] SortKinds
+        {
+            get { return new[] {"Name Ascending", "Name Descending", "Date Ascending", "Date Descending"}; }
+        }
 
         public abstract string SourceUrl { get; }
         public abstract string Title { get; }
-        public abstract void SortImages(string sortkind);
 
+        public virtual void SortImages(string sortkind)
+        {
+            switch (sortkind)
+            {
+                case "Name Ascending":
+                    Images = new ObservableCollection<ImageData>(Images.OrderBy(d => d.FileName));
+                    break;
+                case "Name Descending":
+                    Images = new ObservableCollection<ImageData>(Images.OrderByDescending(d => d.FileName));
+                    break;
+                case "Date Ascending":
+                    Images = new ObservableCollection<ImageData>(Images.OrderBy(d => d.LastModified));
+                    break;
+                case "Date Descending":
+                    Images = new ObservableCollection<ImageData>(Images.OrderByDescending(d => d.LastModified));
+                    break;
+            }
+
+            OnPropertyChanged("Images");
+        }
 
         public virtual ImageLibrary CreateSubLibrary(ImageData data)
         {
