@@ -51,7 +51,7 @@ namespace Peruser
             }
         }
             
-        private bool IsMuted = true;
+        private bool _isMuted;
 
         public string MediaDurationFormatted
         {
@@ -134,7 +134,7 @@ namespace Peruser
                 }
             }
 
-            IsMuted = Configuration.Current.Mute;
+            _isMuted = Configuration.Current.Mute;
             MuteButton_OnClick(null, null);
         }
 
@@ -201,7 +201,7 @@ namespace Peruser
 
         private void MuteButton_OnClick(object sender, RoutedEventArgs e)
         {
-            if (IsMuted)
+            if (_isMuted)
             {
                 MuteButton.Content = "unmute";
                 MediaPlayerElement.Volume = 0;
@@ -212,7 +212,7 @@ namespace Peruser
                 MediaPlayerElement.Volume = 30;
             }
 
-            IsMuted = !IsMuted;
+            _isMuted = !_isMuted;
         }
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
