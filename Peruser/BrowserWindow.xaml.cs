@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,6 +14,7 @@ using System.Windows.Media.Imaging;
 using MahApps.Metro.Controls;
 using Peruser.Annotations;
 using Peruser.ImageLibraries;
+using Peruser.Utilities;
 
 namespace Peruser
 {
@@ -155,18 +157,34 @@ namespace Peruser
                 }
             }
 
+            long skipLength = 0;
+            switch (Configuration.Current.ScrubType)
+            {
+                case ScrubKind.Percent:
+                    skipLength = (long)Math.Round((Configuration.Current.ScrubAmount / 100).Clamp(0, 1) * MediaPlayerElement.MediaDuration);
+                    break;
+                case ScrubKind.Seconds:
+                    skipLength = (long)Configuration.Current.ScrubAmount * TimeSpan.TicksPerSecond;
+                    break;
+                case ScrubKind.Ticks:
+                    skipLength = (long)Configuration.Current.ScrubAmount;
+                    break;
+            }
+
             if (e.Key == Key.Right)
             {
                 if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
                 {
-                    if (MediaPlayerElement.MediaPosition + TimeSpan.FromSeconds(3).Ticks > MediaPlayerElement.MediaDuration)
+                    
+                    if (MediaPlayerElement.MediaPosition + skipLength > MediaPlayerElement.MediaDuration)
                     {
                         MediaPlayerElement.MediaPosition = MediaPlayerElement.MediaPosition;
                     }
                     else
                     {
-                        MediaPlayerElement.MediaPosition += TimeSpan.FromSeconds(3).Ticks;
+                        MediaPlayerElement.MediaPosition += skipLength;
                     }
+                    e.Handled = true;
                 }
                 else
                 {
@@ -180,14 +198,15 @@ namespace Peruser
             {
                 if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
                 {
-                    if (MediaPlayerElement.MediaPosition - TimeSpan.FromSeconds(3).Ticks < 0)
+                    if (MediaPlayerElement.MediaPosition - skipLength < 0)
                     {
                         MediaPlayerElement.MediaPosition = 0;
                     }
                     else
                     {
-                        MediaPlayerElement.MediaPosition -= TimeSpan.FromSeconds(3).Ticks;
+                        MediaPlayerElement.MediaPosition -= skipLength;
                     }
+                    e.Handled = true;
                 }
                 else
                 {
@@ -313,6 +332,20 @@ namespace Peruser
             OnPropertyChanged("Libraries");
         }
 
+        private void CommandBinding_OnSearchGoogleForImage(object sender, ExecutedRoutedEventArgs e)
+        {
+            var selected = (e.Parameter as ContentPresenter).Content as ImageData;
+            if (selected.IsLocalFile)
+            {
+                Process.Start(Util.SearchGoogleForImage(selected));
+            }
+            else
+            {
+                String reqUrl = String.Format("http://www.google.com/searchbyimage?&image_url={0}", selected.Path);
+                Process.Start(reqUrl);
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
@@ -321,5 +354,7 @@ namespace Peruser
             var handler = PropertyChanged;
             if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
         }
+
+
     }
 }

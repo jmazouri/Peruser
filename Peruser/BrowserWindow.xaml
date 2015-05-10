@@ -14,6 +14,7 @@
     
     <controls:MetroWindow.CommandBindings>
         <CommandBinding Command="w:GlobalCommands.DeleteLibrary" Executed="CommandBinding_DeleteLibrary" />
+        <CommandBinding Command="w:GlobalCommands.SearchGoogleForImage"  Executed="CommandBinding_OnSearchGoogleForImage" />
     </controls:MetroWindow.CommandBindings>
     
     <controls:MetroWindow.RightWindowCommands>
@@ -72,7 +73,13 @@
 
                         <HierarchicalDataTemplate.ItemTemplate>
                             <DataTemplate>
-                                <TextBlock Padding="2" Text="{Binding FileName}" Width="{Binding ActualWidth, ElementName=LibraryTreeList, Converter={converters:MathConverter}, ConverterParameter=x-35}" TextWrapping="Wrap" />
+                                <TextBlock Padding="2" Text="{Binding FileName}" Width="{Binding ActualWidth, ElementName=LibraryTreeList, Converter={converters:MathConverter}, ConverterParameter=x-35}" TextWrapping="Wrap">
+                                    <TextBlock.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Search Google for Image" Command="w:GlobalCommands.SearchGoogleForImage" CommandParameter="{Binding RelativeSource={RelativeSource TemplatedParent}}"/>
+                                        </ContextMenu>
+                                    </TextBlock.ContextMenu>
+                                 </TextBlock>
                             </DataTemplate>
                         </HierarchicalDataTemplate.ItemTemplate>
 
@@ -87,8 +94,8 @@
             <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="Silver" 
                 ShowsPreview="False" Focusable="False" Width="4"/>
 
-            <xctk:Zoombox Name="MediaZoombox" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" ZoomOn="View" Focusable="True">
-                <mediakit:MediaUriElement Focusable="False" Name="MediaPlayerElement" Volume="30" Loop="True" Source="{Binding Browser.CurrentImage.Path}" Panel.ZIndex="-5" MediaPositionChanged="MediaPlayerElement_OnMediaPositionChanged" MediaOpened="MediaPlayerElement_OnMediaOpened"/>
+            <xctk:Zoombox Name="MediaZoombox" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" ZoomOn="View" Focusable="True" PreviewKeyDown="BrowserWindow_KeyDown">
+                <mediakit:MediaUriElement Focusable="False" Name="MediaPlayerElement" Volume="30" Loop="True" Source="{Binding Browser.CurrentImage.Path}" Panel.ZIndex="-5" MediaPositionChanged="MediaPlayerElement_OnMediaPositionChanged" MediaOpened="MediaPlayerElement_OnMediaOpened" />
             </xctk:Zoombox>
             
             <toast:Toasty Name="myToast" MinHeight="36" Height="36" VerticalAlignment="Bottom" Duration="0:0:0:2" Message="{Binding ToastMessage}"

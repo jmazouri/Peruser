@@ -12,6 +12,32 @@ namespace Peruser
         private string[] _allowedFileTypes;
         private bool _alwaysOnTop;
         private bool _mute;
+        private ScrubKind _scrubKind;
+        private float _scrubAmount;
+
+        [DisplayName("Scrub Amount")]
+        public float ScrubAmount
+        {
+            get { return _scrubAmount; }
+            set
+            {
+                if (Equals(value, _scrubAmount)) return;
+                _scrubAmount = value;
+                OnPropertyChanged();
+            }
+        }
+
+        [DisplayName("Scrub Type")]
+        public ScrubKind ScrubType
+        {
+            get { return _scrubKind; }
+            set
+            {
+                if (Equals(value, _scrubKind)) return;
+                _scrubKind = value;
+                OnPropertyChanged();
+            }
+        }
 
         [DisplayName("Allowed File Types")]
         public string[] AllowedFileTypes
@@ -103,5 +129,12 @@ namespace Peruser
                 File.WriteAllText(_configPath, Serialize(_curConfig));
             }
         }
+    }
+
+    public enum ScrubKind
+    {
+        Percent,
+        Seconds,
+        Ticks
     }
 }
