@@ -74,7 +74,7 @@ namespace WebpageLibrary
             List<ImageData> genericLinks = imageLinks.Union(textLinks).Union(vidLinks)
                 .Distinct()
                 .Where(d => !String.IsNullOrWhiteSpace(Path.GetExtension(d)))
-                .Where(d => Configuration.Current.AllowedFileTypes.Contains(Path.GetExtension(d).Substring(1).ToLower()))
+                .Where(d => PeruserConfig.Current.AllowedFileTypes.Contains(Path.GetExtension(d).Substring(1).ToLower()))
                 .Select(d => IsOkayUri(d, baseUri, out newUri) ? newUri : null)
                 .Where(d => d != null)
                 .Select(d => new ImageData

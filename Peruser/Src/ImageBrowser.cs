@@ -60,7 +60,7 @@ namespace Peruser
             OnPropertyChanged("ValidSorts");
         }
 
-        private int ImageIndex
+        public int ImageIndex
         {
             get { return _imageIndex; }
             set
@@ -117,15 +117,6 @@ namespace Peruser
                 CurrentLibrary.SortImages(sortkind);
                 ImageIndex = 0;
             }
-        }
-
-        public void NextImage()
-        {
-            ImageIndex++;
-        }
-        public void PrevImage()
-        {
-            ImageIndex--;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

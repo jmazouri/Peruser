@@ -70,6 +70,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>perusericon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="DirectShowLib-2005">
       <HintPath>Lib\DirectShowLib-2005.dll</HintPath>
@@ -141,18 +144,21 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Config\Configuration.cs" />
-    <Compile Include="Converters\MathConverter.cs" />
+    <Compile Include="Src\Config\BaseConfiguration.cs" />
+    <Compile Include="Src\Config\PeruserConfig.cs" />
+    <Compile Include="Src\Converters\MathConverter.cs" />
     <Compile Include="GlobalCommands.cs" />
-    <Compile Include="ImageLibraries\LocalImageLibrary.cs" />
-    <Compile Include="ImageLibrary.cs" />
-    <Compile Include="ImageData.cs" />
-    <Compile Include="LibraryContainer.cs" />
-    <Compile Include="OptionsWindow.xaml.cs">
+    <Compile Include="Src\ImageLibraries\LocalImageLibrary.cs" />
+    <Compile Include="Src\ImageLibrary.cs" />
+    <Compile Include="Src\ImageData.cs" />
+    <Compile Include="Src\LibraryContainer.cs" />
+    <Compile Include="Src\Views\OptionsWindow.xaml.cs">
       <DependentUpon>OptionsWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Utilities\Util.cs" />
-    <Page Include="BrowserWindow.xaml">
+    <Compile Include="Src\Utilities\TreeViewExtensions.cs" />
+    <Compile Include="Src\Utilities\UIUtility.cs" />
+    <Compile Include="Src\Utilities\Util.cs" />
+    <Page Include="Src\Views\BrowserWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -160,21 +166,21 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="BrowserWindow.xaml.cs">
+    <Compile Include="Src\Views\BrowserWindow.xaml.cs">
       <DependentUpon>BrowserWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="CustomStyles.xaml">
+    <Page Include="Src\Views\CustomStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="OptionsWindow.xaml">
+    <Page Include="Src\Views\OptionsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ImageBrowser.cs" />
+    <Compile Include="Src\ImageBrowser.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -204,15 +210,18 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Icons\chanboardicon.png">
+    <Resource Include="perusericon.ico" />
+    <Resource Include="LICENSE.txt" />
+    <Content Include="Icons\chanboardicon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Icons\chanthreadicon.png">
+    </Content>
+    <Content Include="Icons\chanthreadicon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Icons\optionsbutton.png">
+    </Content>
+    <Content Include="Icons\optionsbutton.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    </Content>
+    <Resource Include="Icons\perusericon.ico" />
     <Content Include="Icons\perusericon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -228,9 +237,9 @@
     <Content Include="Icons\imguricon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Resource Include="Icons\webpageicon.png">
+    <Content Include="Icons\webpageicon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    </Content>
     <Content Include="Lib\DirectShowLib-2005.dll" />
     <Content Include="Lib\WPFMediaKit.dll" />
   </ItemGroup>

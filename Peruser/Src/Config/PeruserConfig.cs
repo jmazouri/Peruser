@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -7,7 +8,7 @@ using Peruser.Annotations;
 
 namespace Peruser
 {
-    public class Configuration : INotifyPropertyChanged
+    public class PeruserConfig : BaseConfiguration
     {
         private string[] _allowedFileTypes;
         private bool _alwaysOnTop;
@@ -75,17 +76,19 @@ namespace Peruser
             }
         }
 
-        private Configuration()
+        private PeruserConfig()
         {
             AllowedFileTypes = new[] {"webm", "jpg", "gif", "png", "jpeg", "bmp", "mp4", "avi", "mkv", "flv"};
             AlwaysOnTop = false;
             Mute = false;
+            ScrubType = ScrubKind.Seconds;
+            ScrubAmount = 3;
         }
 
         private static string _configPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "config.json");
 
-        private static Configuration _curConfig;
-        public static Configuration Current
+        private static PeruserConfig _curConfig;
+        public static PeruserConfig Current
         {
             get
             {
@@ -93,10 +96,10 @@ namespace Peruser
 
                 if (!File.Exists(_configPath))
                 {
-                    File.WriteAllText(_configPath, Serialize(new Configuration()));
+                    File.WriteAllText(_configPath, Serialize(new PeruserConfig()));
                 }
 
-                _curConfig = Deserialize(File.ReadAllText(_configPath));
+                _curConfig = Deserialize<PeruserConfig>(File.ReadAllText(_configPath));
 
                 return _curConfig;
             }
@@ -106,35 +109,12 @@ namespace Peruser
             }
         }
 
-        public static string Serialize(Configuration thisConfiguration)
+        protected override void AfterPropertyChanged()
         {
-            return JsonConvert.SerializeObject(thisConfiguration);
-        }
-
-        public static Configuration Deserialize(string thisConfiguration)
-        {
-            return JsonConvert.DeserializeObject<Configuration>(thisConfiguration);
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            var handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
-
             if (_curConfig != null)
             {
                 File.WriteAllText(_configPath, Serialize(_curConfig));
             }
         }
-    }
-
-    public enum ScrubKind
-    {
-        Percent,
-        Seconds,
-        Ticks
     }
 }

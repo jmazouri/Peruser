@@ -8,10 +8,10 @@ namespace Peruser
     /// </summary>
     public partial class OptionsWindow : MetroWindow
     {
-        public Configuration Config
+        public PeruserConfig Config
         {
-            get { return Configuration.Current; }
-            set { Configuration.Current = value; }
+            get { return PeruserConfig.Current; }
+            set { PeruserConfig.Current = value; }
         }
 
         public OptionsWindow()

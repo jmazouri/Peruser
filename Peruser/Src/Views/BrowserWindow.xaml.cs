@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
+using SynesthesiaM;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -21,7 +21,7 @@ namespace Peruser
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class BrowserWindow : MetroWindow, INotifyPropertyChanged
+    public partial class BrowserWindow : INotifyPropertyChanged
     {
         public string ToastMessage { get; set; }
         public ImageBrowser Browser { get; set; }
@@ -83,7 +83,8 @@ namespace Peruser
 
             InitializeComponent();
 
-            AllowsTransparency = true;
+            //Maximizing doesn't work for some reason, so we have to let it cover the taskbar then override that
+            MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight - 16;
             
             Style buttonStyle = (Style) FindResource("MetroCircleButtonStyle");
 
@@ -101,7 +102,7 @@ namespace Peruser
                     DataContext = type,
                     Content = new Image()
                     {
-                        Source = new BitmapImage(new Uri(imagePath, UriKind.Relative)),
+                        Source = new BitmapImage(new Uri("../../" + imagePath, UriKind.Relative)),
                         Width = 16,
                         Height = 16
                     },
@@ -136,7 +137,7 @@ namespace Peruser
                 }
             }
 
-            _isMuted = Configuration.Current.Mute;
+            _isMuted = PeruserConfig.Current.Mute;
             MuteButton_OnClick(null, null);
         }
 
@@ -158,16 +159,16 @@ namespace Peruser
             }
 
             long skipLength = 0;
-            switch (Configuration.Current.ScrubType)
+            switch (PeruserConfig.Current.ScrubType)
             {
                 case ScrubKind.Percent:
-                    skipLength = (long)Math.Round((Configuration.Current.ScrubAmount / 100).Clamp(0, 1) * MediaPlayerElement.MediaDuration);
+                    skipLength = (long)Math.Round((PeruserConfig.Current.ScrubAmount / 100).Clamp(0, 1) * MediaPlayerElement.MediaDuration);
                     break;
                 case ScrubKind.Seconds:
-                    skipLength = (long)Configuration.Current.ScrubAmount * TimeSpan.TicksPerSecond;
+                    skipLength = (long)PeruserConfig.Current.ScrubAmount * TimeSpan.TicksPerSecond;
                     break;
                 case ScrubKind.Ticks:
-                    skipLength = (long)Configuration.Current.ScrubAmount;
+                    skipLength = (long)PeruserConfig.Current.ScrubAmount;
                     break;
             }
 
@@ -188,8 +189,10 @@ namespace Peruser
                 }
                 else
                 {
-                    Browser.NextImage();
+                    Browser.ImageIndex++;
                 }
+
+                LibraryTreeList.SetSelectedItem(new object[] { Browser.CurrentLibrary, Browser.CurrentImage });
 
                 MediaZoombox.Focus();
             }
@@ -210,8 +213,10 @@ namespace Peruser
                 }
                 else
                 {
-                    Browser.PrevImage();
+                    Browser.ImageIndex--;
                 }
+
+                LibraryTreeList.SetSelectedItem(new object[] { Browser.CurrentLibrary, Browser.CurrentImage });
 
                 MediaZoombox.Focus();
             }
@@ -250,9 +255,15 @@ namespace Peruser
             else
             {
                 var newValue = e.NewValue as ImageData;
-                if (newValue != null)
+                if (newValue != null && Browser.CurrentImage != newValue)
                 {
-                    LibraryIndex = Libraries.IndexOf(ImageLibrary.FindImageInLibraries(Libraries, newValue));
+                    var foundLibrary = ImageLibrary.FindImageInLibraries(Libraries, newValue);
+
+                    if (Browser.CurrentLibrary != foundLibrary)
+                    {
+                        LibraryIndex = Libraries.IndexOf(ImageLibrary.FindImageInLibraries(Libraries, newValue));
+                    }
+                    
                     Browser.SetIndexToImage(newValue);
                 }
             }
@@ -322,7 +333,7 @@ namespace Peruser
         private void BrowserWindow_OnDeactivated(object sender, EventArgs e)
         {
             Window window = (Window)sender;
-            window.Topmost = Configuration.Current.AlwaysOnTop;
+            window.Topmost = PeruserConfig.Current.AlwaysOnTop;
         }
 
         private void CommandBinding_DeleteLibrary(object sender, ExecutedRoutedEventArgs e)
@@ -349,12 +360,10 @@ namespace Peruser
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             var handler = PropertyChanged;
             if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
         }
-
-
     }
 }

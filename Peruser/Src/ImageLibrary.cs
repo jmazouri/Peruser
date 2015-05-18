@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace Peruser
 
         public virtual string[] SortKinds
         {
-            get { return new[] {"Name Ascending", "Name Descending", "Date Ascending", "Date Descending"}; }
+            get { return new[] {"Name Ascending", "Name Descending", "Date Ascending", "Date Descending", "Random"}; }
         }
 
         public abstract string SourceUrl { get; }
@@ -39,6 +40,10 @@ namespace Peruser
                     break;
                 case "Date Descending":
                     Images = new ObservableCollection<ImageData>(Images.OrderByDescending(d => d.LastModified));
+                    break;
+                case "Random":
+                    Random rand = new Random();
+                    Images = new ObservableCollection<ImageData>(Images.OrderBy(d=>rand.Next()));
                     break;
             }
 

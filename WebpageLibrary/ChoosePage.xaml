@@ -20,7 +20,7 @@
         </ResourceDictionary>
     </Window.Resources>
     <StackPanel Orientation="Vertical" Margin="4,0,4,4" >
-        <Label Content="Options" FontSize="{StaticResource SubHeaderFontSize}"/>
+        <Label Content="Page Scraper" FontSize="{StaticResource SubHeaderFontSize}"/>
         <xctk:PropertyGrid SelectedObject="{Binding Config}" ShowSearchBox="False" ShowTitle="False" NameColumnWidth="175" ShowSortOptions="False" ShowSummary="False" IsCategorized="False" Height="129"></xctk:PropertyGrid>
         <DockPanel>
             <Button Name="OkButton" DockPanel.Dock="Left" Width="200" Click="OkButton_Click">Go</Button>

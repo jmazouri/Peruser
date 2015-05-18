@@ -6,11 +6,11 @@
         xmlns:converters="clr-namespace:Peruser.Converters"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:w="clr-namespace:Peruser"
-        xmlns:toast="clr-namespace:Toast;assembly=Toast" Icon="Icons/perusericon.png"
+        xmlns:toast="clr-namespace:Toast;assembly=Toast" Icon="../../Icons/perusericon.png"
         Title="Peruser" DataContext="{Binding RelativeSource={RelativeSource Self}}" 
-        KeyDown="BrowserWindow_KeyDown"
         Height="404" Width="749" MinWidth="350" MinHeight="200"
-        IgnoreTaskbarOnMaximize="True" Focusable="True" Deactivated="BrowserWindow_OnDeactivated">
+        IgnoreTaskbarOnMaximize="True" Focusable="True" Deactivated="BrowserWindow_OnDeactivated"
+        WindowStartupLocation="CenterScreen" EnableDWMDropShadow="True">
     
     <controls:MetroWindow.CommandBindings>
         <CommandBinding Command="w:GlobalCommands.DeleteLibrary" Executed="CommandBinding_DeleteLibrary" />
@@ -25,7 +25,7 @@
                         <Rectangle.OpacityMask>
                             <VisualBrush Stretch="Fill">
                                 <VisualBrush.Visual>
-                                    <Image Source="Icons/optionsbutton.png"></Image>
+                                    <Image Source="../../Icons/optionsbutton.png"></Image>
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </Rectangle.OpacityMask>
@@ -35,7 +35,7 @@
                    Text="settings" />
                 </StackPanel>
             </Button>
-            <ToggleButton Name="MuteButton" Click="MuteButton_OnClick" Content="mute"/>
+            <ToggleButton Name="MuteButton" Click="MuteButton_OnClick">mute</ToggleButton>
         </controls:WindowCommands>
     </controls:MetroWindow.RightWindowCommands>
     

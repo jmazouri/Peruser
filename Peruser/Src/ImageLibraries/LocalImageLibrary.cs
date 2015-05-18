@@ -73,7 +73,7 @@ namespace Peruser.ImageLibraries
             _images.Clear();
             foreach (string s in Directory.GetFiles(filepath))
             {
-                if (Configuration.Current.AllowedFileTypes.Contains(Path.GetExtension(s).Substring(1)))
+                if (PeruserConfig.Current.AllowedFileTypes.Contains(Path.GetExtension(s).Substring(1)))
                 {
                     _images.Add(new ImageData
                     {
